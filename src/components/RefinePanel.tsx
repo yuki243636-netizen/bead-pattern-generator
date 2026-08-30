@@ -116,15 +116,28 @@ export default function RefinePanel(props: RefinePanelProps) {
       {refineMode === 'colorReplace' && <ColorReplaceTool {...props} />}
       {refineMode === 'pixelEdit' && <PixelEditTool {...props} />}
 
-      {/* 恢复原始图纸 */}
-      {canRestoreOriginal && (
+      {/* 返回上一步 + 恢复原始图纸 */}
+      <div className="flex gap-2">
         <button
-          onClick={onRestoreOriginal}
-          className="w-full py-1.5 text-[10px] font-medium text-ink-lighter bg-paper-darker/50 hover:bg-paper-darker rounded-lg transition-colors border border-paper-darker"
+          onClick={onUndo}
+          disabled={!canUndo}
+          className={`flex-1 py-1.5 text-[10px] font-medium rounded-lg transition-colors border ${
+            canUndo
+              ? 'text-ink-lighter bg-paper-darker/50 hover:bg-paper-darker border-paper-darker'
+              : 'text-ink-lightest bg-paper-darker/30 border-paper-darker cursor-not-allowed'
+          }`}
         >
-          恢复原始图纸
+          返回上一步
         </button>
-      )}
+        {canRestoreOriginal && (
+          <button
+            onClick={onRestoreOriginal}
+            className="flex-1 py-1.5 text-[10px] font-medium text-ink-lighter bg-paper-darker/50 hover:bg-paper-darker rounded-lg transition-colors border border-paper-darker"
+          >
+            恢复原始图纸
+          </button>
+        )}
+      </div>
     </div>
   )
 }

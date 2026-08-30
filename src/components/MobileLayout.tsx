@@ -1,10 +1,9 @@
-import { useState, useRef, type ReactNode } from 'react'
+import { useState } from 'react'
 import type {
   Palette,
   PaletteColor,
   BeadSize,
   MatchMode,
-  ColorStat,
   RefineMode,
   GenerateResult,
 } from '../types'
@@ -18,7 +17,7 @@ import type { QuantizationResult, DebugCellInfo } from '../utils/colorQuantizati
 // ============================================================
 // 移动端底部工具栏 Tab 类型
 // ============================================================
-type MobileTab = 'upload' | 'board' | 'color' | 'refine' | null
+type MobileTab = 'upload' | 'refine' | null
 
 // ============================================================
 // MobileLayout Props — 复用 App.tsx 全部状态
@@ -330,29 +329,114 @@ export default function MobileLayout(props: MobileLayoutProps) {
 
       {/* ===== 底部操作区 ===== */}
       <div className="flex-shrink-0 bg-paper-light border-t border-paper-darker safe-area-bottom">
-        {/* 底部工具栏 — 按制作流程分层 */}
+        {/* 板型 — 始终展示 */}
+        <div className="px-3 py-1.5 border-b border-paper-darker">
+          <div className="flex items-center gap-2">
+            <span className="text-[10px] font-medium text-ink-lighter flex-shrink-0 w-6">板型</span>
+            <div className="flex gap-1.5 overflow-x-auto no-scrollbar flex-1">
+              {BOARD_SIZES.map(board => (
+                <button
+                  key={board.id}
+                  onClick={() => onBoardSizeChange(board.id)}
+                  className={`flex-shrink-0 px-2.5 py-1 rounded-md transition-all text-center min-w-[56px] ${
+                    boardSizeId === board.id
+                      ? 'bg-ink text-white'
+                      : 'bg-paper-darker text-ink-lighter'
+                  }`}
+                >
+                  <div className="text-[11px] font-semibold leading-tight">{board.name}</div>
+                  <div className={`text-[8px] leading-tight ${boardSizeId === board.id ? 'text-white/70' : 'text-ink-lightest'}`}>
+                    {board.width}×{board.height}
+                  </div>
+                </button>
+              ))}
+            </div>
+            {/* 豆子大小 — 紧凑选择 */}
+            <div className="flex gap-0.5 flex-shrink-0">
+              {([
+                { value: 'mini' as const, label: 'M' },
+                { value: 'standard' as const, label: 'S' },
+                { value: 'large' as const, label: 'L' }
+              ]).map(opt => (
+                <button
+                  key={opt.value}
+                  onClick={() => onBeadSizeChange(opt.value)}
+                  className={`w-6 h-6 text-[9px] font-bold rounded transition-colors ${
+                    beadSize === opt.value ? 'bg-ink text-white' : 'bg-paper-darker text-ink-lighter'
+                  }`}
+                >
+                  {opt.label}
+                </button>
+              ))}
+            </div>
+          </div>
+          <div className="flex items-center gap-2 mt-0.5">
+            <span className="text-[8px] text-ink-lightest">实际 {canvasWidth}×{canvasHeight} · ≈{(canvasWidth * 0.5).toFixed(0)}×{(canvasHeight * 0.5).toFixed(0)}cm</span>
+          </div>
+        </div>
+
+        {/* 色卡 — 始终展示 */}
+        <div className="px-3 py-1.5 border-b border-paper-darker">
+          <div className="flex items-center gap-2">
+            <span className="text-[10px] font-medium text-ink-lighter flex-shrink-0 w-6">色卡</span>
+            <select
+              value={currentPaletteId}
+              onChange={e => onPaletteChange(e.target.value)}
+              className="flex-1 px-2 py-1.5 text-xs border border-paper-darker rounded-md bg-paper-light focus:border-ink focus:outline-none min-h-[32px]"
+            >
+              {palettes.map(p => (
+                <option key={p.id} value={p.id}>
+                  {p.name_cn || p.name}
+                </option>
+              ))}
+            </select>
+            <button
+              onClick={() => onMatchModeChange(matchMode === 'standard' ? 'limited' : 'standard')}
+              className={`px-2.5 py-1.5 text-[10px] font-medium rounded-md transition-colors flex-shrink-0 min-h-[32px] ${
+                matchMode === 'limited' ? 'bg-ink text-white' : 'bg-paper-darker text-ink-lighter'
+              }`}
+            >
+              {matchMode === 'limited' ? `限${maxColors}色` : '标准'}
+            </button>
+            <button
+              onClick={() => onDitherChange(!dither)}
+              className={`px-2 py-1.5 text-[9px] font-medium rounded-md transition-colors flex-shrink-0 min-h-[32px] ${
+                dither ? 'bg-ink text-white' : 'bg-paper-darker text-ink-lighter'
+              }`}
+            >
+              抖动
+            </button>
+            <button
+              onClick={() => onDebugModeChange(!debugMode)}
+              className={`px-2 py-1.5 text-[9px] font-medium rounded-md transition-colors flex-shrink-0 min-h-[32px] ${
+                debugMode ? 'bg-ink text-white' : 'bg-paper-darker text-ink-lighter'
+              }`}
+            >
+              调试
+            </button>
+          </div>
+          {matchMode === 'limited' && (
+            <div className="flex items-center gap-2 mt-1">
+              <input
+                type="range"
+                min={2}
+                max={Math.min(48, colorCount)}
+                value={maxColors}
+                onChange={e => onMaxColorsChange(Number(e.target.value))}
+                className="flex-1 mobile-slider h-1"
+              />
+              <span className="text-[10px] font-semibold text-ink w-6 text-right">{maxColors}</span>
+            </div>
+          )}
+        </div>
+
+        {/* Tab: 图片 / 精修 */}
         <div className="flex items-stretch border-b border-paper-darker">
-          {/* 制作基础设置 */}
           <FlowTabButton
             label="图片"
             active={activeTab === 'upload'}
             onClick={() => handleTabClick('upload')}
           />
-          <FlowTabButton
-            label="板型"
-            active={activeTab === 'board'}
-            onClick={() => handleTabClick('board')}
-          />
-          <FlowTabButton
-            label="色卡"
-            active={activeTab === 'color'}
-            onClick={() => handleTabClick('color')}
-          />
-
-          {/* 分隔线 */}
-          <div className="w-px bg-paper-darker my-1.5 flex-shrink-0" />
-
-          {/* 图纸调整 */}
           <FlowTabButton
             label="精修"
             active={activeTab === 'refine'}
@@ -364,7 +448,7 @@ export default function MobileLayout(props: MobileLayoutProps) {
 
         {/* 展开面板区域 */}
         {activeTab && (
-          <div className="max-h-[28vh] overflow-y-auto border-b border-paper-darker animate-fade-in">
+          <div className="max-h-[22vh] overflow-y-auto border-b border-paper-darker animate-fade-in">
             <div className="p-3">
               {activeTab === 'upload' && (
                 <UploadPanel
@@ -374,32 +458,6 @@ export default function MobileLayout(props: MobileLayoutProps) {
                   onImageUpload={onImageUpload}
                   onImageRemove={onImageRemove}
                   hasResult={!!displayResult}
-                />
-              )}
-              {activeTab === 'board' && (
-                <BoardPanel
-                  boardSizeId={boardSizeId}
-                  onBoardSizeChange={onBoardSizeChange}
-                  canvasWidth={canvasWidth}
-                  canvasHeight={canvasHeight}
-                  beadSize={beadSize}
-                  onBeadSizeChange={onBeadSizeChange}
-                />
-              )}
-              {activeTab === 'color' && (
-                <ColorPanel
-                  palettes={palettes}
-                  currentPaletteId={currentPaletteId}
-                  onPaletteChange={onPaletteChange}
-                  matchMode={matchMode}
-                  onMatchModeChange={onMatchModeChange}
-                  maxColors={maxColors}
-                  onMaxColorsChange={onMaxColorsChange}
-                  colorCount={colorCount}
-                  dither={dither}
-                  onDitherChange={onDitherChange}
-                  debugMode={debugMode}
-                  onDebugModeChange={onDebugModeChange}
                 />
               )}
               {activeTab === 'refine' && displayResult && (
@@ -556,200 +614,4 @@ function UploadPanel({
   )
 }
 
-// ============================================================
-// 板型面板
-// ============================================================
-function BoardPanel({
-  boardSizeId,
-  onBoardSizeChange,
-  canvasWidth,
-  canvasHeight,
-  beadSize,
-  onBeadSizeChange,
-}: {
-  boardSizeId: BoardSizeId
-  onBoardSizeChange: (id: BoardSizeId) => void
-  canvasWidth: number
-  canvasHeight: number
-  beadSize: BeadSize
-  onBeadSizeChange: (val: BeadSize) => void
-}) {
-  return (
-    <div className="space-y-3">
-      <div className="flex gap-1.5 overflow-x-auto no-scrollbar pb-1">
-        {BOARD_SIZES.map(board => (
-          <button
-            key={board.id}
-            onClick={() => onBoardSizeChange(board.id)}
-            className={`flex-shrink-0 px-3 py-2 rounded-lg transition-all text-center min-w-[72px] ${
-              boardSizeId === board.id
-                ? 'bg-ink text-white'
-                : 'bg-paper-darker text-ink-lighter'
-            }`}
-          >
-            <div className="text-xs font-semibold">{board.name}</div>
-            <div className={`text-[9px] mt-0.5 ${boardSizeId === board.id ? 'text-white/70' : 'text-ink-lightest'}`}>
-              {board.width}×{board.height}
-            </div>
-          </button>
-        ))}
-      </div>
 
-      <div className="flex items-center gap-2 px-2 py-1.5 bg-paper-darker/50 rounded-md">
-        <span className="text-[10px] text-ink-lighter">实际图纸:</span>
-        <span className="text-xs font-semibold text-ink">{canvasWidth}×{canvasHeight}</span>
-        <span className="ml-auto text-[10px] text-ink-lightest">
-          ≈{(canvasWidth * 0.5).toFixed(0)}×{(canvasHeight * 0.5).toFixed(0)}cm
-        </span>
-      </div>
-
-      <div className="flex gap-1.5">
-        {([
-          { value: 'mini' as const, label: 'Mini' },
-          { value: 'standard' as const, label: 'Standard' },
-          { value: 'large' as const, label: 'Large' }
-        ]).map(opt => (
-          <button
-            key={opt.value}
-            onClick={() => onBeadSizeChange(opt.value)}
-            className={`flex-1 py-2 text-xs font-medium rounded-lg transition-colors min-h-[40px] ${
-              beadSize === opt.value
-                ? 'bg-ink text-white'
-                : 'bg-paper-darker text-ink-lighter'
-            }`}
-          >
-            {opt.label}
-          </button>
-        ))}
-      </div>
-    </div>
-  )
-}
-
-// ============================================================
-// 颜色面板
-// ============================================================
-function ColorPanel({
-  palettes,
-  currentPaletteId,
-  onPaletteChange,
-  matchMode,
-  onMatchModeChange,
-  maxColors,
-  onMaxColorsChange,
-  colorCount,
-  dither,
-  onDitherChange,
-  debugMode,
-  onDebugModeChange,
-}: {
-  palettes: Palette[]
-  currentPaletteId: string
-  onPaletteChange: (id: string) => void
-  matchMode: MatchMode
-  onMatchModeChange: (val: MatchMode) => void
-  maxColors: number
-  onMaxColorsChange: (val: number) => void
-  colorCount: number
-  dither: boolean
-  onDitherChange: (val: boolean) => void
-  debugMode: boolean
-  onDebugModeChange: (val: boolean) => void
-}) {
-  const currentPalette = palettes.find(p => p.id === currentPaletteId)
-
-  return (
-    <div className="space-y-3">
-      {/* 色卡选择 */}
-      <div className="space-y-1.5">
-        <label className="text-[10px] font-medium text-ink-lighter">当前色卡</label>
-        <select
-          value={currentPaletteId}
-          onChange={e => onPaletteChange(e.target.value)}
-          className="w-full px-3 py-2.5 text-sm border border-paper-darker rounded-lg bg-paper-light focus:border-ink focus:outline-none min-h-[44px]"
-        >
-          {palettes.map(p => (
-            <option key={p.id} value={p.id}>
-              {p.name_cn || p.name}
-            </option>
-          ))}
-        </select>
-        {currentPalette && (
-          <div className="flex items-center gap-2">
-            <span className="text-[10px] text-ink-lighter">品牌:</span>
-            <span className="text-[10px] font-medium text-ink">{currentPalette.brand}</span>
-          </div>
-        )}
-      </div>
-
-      {/* 匹配模式 */}
-      <div className="space-y-1.5">
-        <label className="text-[10px] font-medium text-ink-lighter">颜色匹配</label>
-        <div className="flex gap-1.5">
-          <button
-            onClick={() => onMatchModeChange('standard')}
-            className={`flex-1 py-2.5 text-xs font-medium rounded-lg transition-colors min-h-[44px] ${
-              matchMode === 'standard' ? 'bg-ink text-white' : 'bg-paper-darker text-ink-lighter'
-            }`}
-          >
-            标准
-          </button>
-          <button
-            onClick={() => onMatchModeChange('limited')}
-            className={`flex-1 py-2.5 text-xs font-medium rounded-lg transition-colors min-h-[44px] ${
-              matchMode === 'limited' ? 'bg-ink text-white' : 'bg-paper-darker text-ink-lighter'
-            }`}
-          >
-            限定颜色数
-          </button>
-        </div>
-      </div>
-
-      {/* 限定颜色数滑杆 */}
-      {matchMode === 'limited' && (
-        <div className="space-y-1.5 px-1">
-          <div className="flex items-center justify-between">
-            <label className="text-xs text-ink-lighter">最大颜色数</label>
-            <span className="text-sm font-semibold text-ink">{maxColors}</span>
-          </div>
-          <input
-            type="range"
-            min={2}
-            max={Math.min(48, colorCount)}
-            value={maxColors}
-            onChange={e => onMaxColorsChange(Number(e.target.value))}
-            className="w-full mobile-slider"
-          />
-        </div>
-      )}
-
-      {/* 抖动开关 */}
-      <button
-        onClick={() => onDitherChange(!dither)}
-        className="flex items-center justify-between w-full px-3 py-2.5 rounded-lg bg-paper-darker/50 active:bg-paper-darker transition-colors min-h-[48px]"
-      >
-        <div className="flex flex-col items-start">
-          <span className="text-xs font-medium text-ink-lighter">抖动 (Dither)</span>
-          <span className="text-[10px] text-ink-lightest">受控有序抖动，仅限渐变区域</span>
-        </div>
-        <div className={`w-11 h-6 rounded-full transition-colors flex items-center ${dither ? 'bg-ink' : 'bg-paper-darker'}`}>
-          <div className={`w-5 h-5 bg-white rounded-full shadow transition-transform ${dither ? 'translate-x-5' : 'translate-x-0.5'}`} />
-        </div>
-      </button>
-
-      {/* 调试模式 */}
-      <button
-        onClick={() => onDebugModeChange(!debugMode)}
-        className="flex items-center justify-between w-full px-3 py-2.5 rounded-lg bg-paper-darker/50 active:bg-paper-darker transition-colors min-h-[48px]"
-      >
-        <div className="flex flex-col items-start">
-          <span className="text-xs font-medium text-ink-lighter">调试模式 (Debug)</span>
-          <span className="text-[10px] text-ink-lightest">显示每格原始色→匹配色→Delta E</span>
-        </div>
-        <div className={`w-11 h-6 rounded-full transition-colors flex items-center ${debugMode ? 'bg-ink' : 'bg-paper-darker'}`}>
-          <div className={`w-5 h-5 bg-white rounded-full shadow transition-transform ${debugMode ? 'translate-x-5' : 'translate-x-0.5'}`} />
-        </div>
-      </button>
-    </div>
-  )
-}
