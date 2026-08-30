@@ -1,6 +1,6 @@
 // ============================================================
 // 图纸导出工具
-// JPG 导出（桌面端直接下载 / 移动端长按保存）
+// JPG 导出（桌面端直接下载 / 移动端 Web Share API 直接保存到相册）
 // PDF 导出（jsPDF，多页：图纸 + 颜色统计 + 豆子清单）
 // ============================================================
 
@@ -20,97 +20,43 @@ function isMobileDevice(): boolean {
 }
 
 /**
- * 移动端图片预览弹窗 — 用户长按图片即可保存到相册
- * 兼容 iOS Safari、Chrome、微信内置浏览器等
+ * 通过 Web Share API 分享文件，用户可选择「存储图像」保存到相册
+ * 兼容 iOS Safari 15+、Android Chrome、部分微信内置浏览器
  */
-function showMobileImagePreview(dataUrl: string, filename: string): void {
-  // 创建遮罩层
-  const overlay = document.createElement('div')
-  overlay.style.cssText = `
-    position: fixed;
-    top: 0; left: 0; right: 0; bottom: 0;
-    background: rgba(0, 0, 0, 0.92);
-    z-index: 99999;
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    justify-content: center;
-    padding: 20px;
-    box-sizing: border-box;
-    -webkit-user-select: none;
-    user-select: none;
-  `
+async function shareImageToPhotos(blob: Blob, filename: string): Promise<boolean> {
+  const nav = navigator as Navigator & { canShare?: (data: { files: File[] }) => boolean; share?: (data: { files: File[]; title?: string }) => Promise<void> }
 
-  // 提示文字
-  const tip = document.createElement('div')
-  tip.style.cssText = `
-    color: #fff;
-    font-size: 16px;
-    font-weight: 600;
-    margin-bottom: 16px;
-    text-align: center;
-    line-height: 1.6;
-  `
-  tip.textContent = '长按图片保存到相册'
+  if (!nav.canShare || !nav.share) return false
 
-  // 图片
-  const img = document.createElement('img')
-  img.src = dataUrl
-  img.style.cssText = `
-    max-width: 90vw;
-    max-height: 70vh;
-    border-radius: 8px;
-    -webkit-touch-callout: default;
-    -webkit-user-select: auto;
-    user-select: auto;
-    pointer-events: auto;
-  `
-  img.setAttribute('download', filename)
+  const file = new File([blob], filename, { type: 'image/jpeg' })
 
-  // 关闭按钮
-  const closeBtn = document.createElement('button')
-  closeBtn.style.cssText = `
-    margin-top: 20px;
-    padding: 10px 32px;
-    background: #fff;
-    color: #1a1a1a;
-    border: none;
-    border-radius: 24px;
-    font-size: 15px;
-    font-weight: 600;
-    cursor: pointer;
-    -webkit-tap-highlight-color: transparent;
-  `
-  closeBtn.textContent = '关闭'
-  closeBtn.addEventListener('click', () => {
-    overlay.remove()
-  })
+  if (!nav.canShare({ files: [file] })) return false
 
-  // 点击遮罩区域（非图片）也可关闭
-  overlay.addEventListener('click', (e) => {
-    if (e.target === overlay) {
-      overlay.remove()
-    }
-  })
-
-  overlay.appendChild(tip)
-  overlay.appendChild(img)
-  overlay.appendChild(closeBtn)
-  document.body.appendChild(overlay)
+  try {
+    await nav.share({
+      files: [file],
+      title: '甘薯么拼豆',
+    })
+    return true
+  } catch (err) {
+    // 用户取消分享不算错误
+    if (err instanceof DOMException && err.name === 'AbortError') return true
+    return false
+  }
 }
 
 /**
  * 导出图纸为 JPG
  * 桌面端：直接触发下载
- * 移动端：弹出全屏图片预览，用户长按图片保存到相册
+ * 移动端：优先使用 Web Share API 直接保存到相册，不支持时回退到直接下载
  */
-export function exportPNG(
+export async function exportPNG(
   grid: PatternGrid,
   colorMap: Map<string, PaletteColor>,
   beadSize: number,
   options: DownloadOptions,
   stats?: ColorStat[]
-): void {
+): Promise<void> {
   // 图纸模式导出（方格 + 网格线 + 颜色编号）
   const asBeads = !options.includeGrid
   const showCodes = !asBeads // 图纸模式显示编号
@@ -140,10 +86,21 @@ export function exportPNG(
   const mobile = isMobileDevice()
 
   if (mobile) {
-    // 移动端：在当前页面弹出全屏图片预览，用户长按图片保存到相册
-    // 比打开新标签页更可靠，兼容微信内置浏览器、iOS Safari 等
-    const dataUrl = exportCanvas.toDataURL('image/jpeg', 0.92)
-    showMobileImagePreview(dataUrl, filename)
+    // 移动端：优先 Web Share API 直接保存到相册
+    const blob = await new Promise<Blob>((resolve) => {
+      exportCanvas.toBlob((b) => resolve(b!), 'image/jpeg', 0.92)
+    })
+
+    const shared = await shareImageToPhotos(blob, filename)
+    if (shared) return
+
+    // 回退：直接触发下载（部分浏览器会保存到下载文件夹）
+    const url = URL.createObjectURL(blob)
+    const link = document.createElement('a')
+    link.download = filename
+    link.href = url
+    link.click()
+    setTimeout(() => URL.revokeObjectURL(url), 1000)
   } else {
     // 桌面端：直接下载
     const link = document.createElement('a')

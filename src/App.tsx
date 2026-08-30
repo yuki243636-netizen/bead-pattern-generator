@@ -440,14 +440,14 @@ export default function App() {
     }
   }
 
-  const handleDownload = (options: DownloadOptions) => {
+  const handleDownload = async (options: DownloadOptions) => {
     if (!displayResult) return
 
     const beadPx = BEAD_SIZE_PIXELS[beadSize]
     const palette = palettes.find(p => p.id === currentPaletteId)
 
     if (options.format === 'png') {
-      exportPNG(displayResult.grid, colorMap, beadPx, options, displayResult.stats)
+      await exportPNG(displayResult.grid, colorMap, beadPx, options, displayResult.stats)
     } else {
       exportPDF(
         displayResult.grid,
