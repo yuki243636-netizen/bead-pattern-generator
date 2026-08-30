@@ -266,7 +266,44 @@ export default function MobileLayout(props: MobileLayoutProps) {
           selectedCells={selectedCells}
           brushColor={brushColor}
           resetViewSignal={resetViewSignal}
+          isMobile
         />
+
+        {/* 移动端浮动坐标/图例切换 — 左上角小按钮 */}
+        {displayResult && (
+          <div className="absolute top-2 left-2 flex gap-1 z-10">
+            <button
+              onClick={() => onShowCoordinatesChange(!showCoordinates)}
+              className={`px-2.5 h-7 rounded-lg text-[10px] font-medium border backdrop-blur-sm transition-colors ${
+                showCoordinates
+                  ? 'bg-ink text-white border-ink'
+                  : 'bg-paper-light/90 text-ink-lighter border-paper-darker'
+              }`}
+            >
+              坐标
+            </button>
+            <button
+              onClick={() => onShowLegendChange(!showLegend)}
+              className={`px-2.5 h-7 rounded-lg text-[10px] font-medium border backdrop-blur-sm transition-colors ${
+                showLegend
+                  ? 'bg-ink text-white border-ink'
+                  : 'bg-paper-light/90 text-ink-lighter border-paper-darker'
+              }`}
+            >
+              图例
+            </button>
+            {canUndo && (
+              <button
+                onClick={onUndo}
+                className="w-7 h-7 rounded-lg bg-paper-light/90 backdrop-blur-sm border border-paper-darker flex items-center justify-center text-ink-lighter active:scale-90 transition-transform"
+              >
+                <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5">
+                  <path d="M3 7v6h6M3 13a9 9 0 1 0 3-7.7L3 8" />
+                </svg>
+              </button>
+            )}
+          </div>
+        )}
 
         {/* 空状态遮罩 — 没有图片时显示 */}
         {!imagePreview && !displayResult && (

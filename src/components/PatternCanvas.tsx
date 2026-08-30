@@ -34,6 +34,8 @@ interface PatternCanvasProps {
   selectedCells: Set<string>
   brushColor: string | null
   resetViewSignal: number
+  /** 移动端模式 — 隐藏自带底部工具栏和空状态引导 */
+  isMobile?: boolean
 }
 
 export default function PatternCanvas({
@@ -66,6 +68,7 @@ export default function PatternCanvas({
   selectedCells,
   brushColor,
   resetViewSignal,
+  isMobile = false,
 }: PatternCanvasProps) {
   const containerRef = useRef<HTMLDivElement>(null)
   const canvasRef = useRef<HTMLCanvasElement>(null)
@@ -417,6 +420,17 @@ export default function PatternCanvas({
                 </button>
               )}
             </div>
+          ) : isMobile ? (
+            <>
+              <svg className="mx-auto text-ink-lightest mb-3" width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5">
+                <rect x="3" y="3" width="7" height="7" rx="1" />
+                <rect x="14" y="3" width="7" height="7" rx="1" />
+                <rect x="3" y="14" width="7" height="7" rx="1" />
+                <rect x="14" y="14" width="7" height="7" rx="1" />
+              </svg>
+              <p className="text-sm text-ink-lighter">点击下方「图片」</p>
+              <p className="text-sm text-ink-lighter">上传图片并生成图纸</p>
+            </>
           ) : (
             <>
               <svg className="mx-auto text-ink-lightest mb-3" width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5">
@@ -425,7 +439,7 @@ export default function PatternCanvas({
                 <rect x="3" y="14" width="7" height="7" rx="1" />
                 <rect x="14" y="14" width="7" height="7" rx="1" />
               </svg>
-              <p className="text-sm text-ink-lighter">点击左上角菜单</p>
+              <p className="text-sm text-ink-lighter">点击左侧上传图片</p>
               <p className="text-sm text-ink-lighter">上传图片并生成图纸</p>
             </>
           )}
@@ -626,64 +640,94 @@ export default function PatternCanvas({
         </div>
       )}
 
-      {/* 底部工具栏 — 手指可达 */}
-      <div className="flex items-center justify-between px-3 py-2 border-t border-paper-darker bg-paper-light flex-shrink-0 gap-2">
-        {/* 左侧：缩放 */}
-        <div className="flex items-center gap-1">
+      {/* 底部工具栏 — 桌面端显示，移动端隐藏（移动端用浮动缩放按钮） */}
+      {!isMobile && (
+        <div className="flex items-center justify-between px-3 py-2 border-t border-paper-darker bg-paper-light flex-shrink-0 gap-2">
+          {/* 左侧：缩放 */}
+          <div className="flex items-center gap-1">
+            <button
+              onClick={handleZoomOut}
+              className="w-9 h-9 rounded-lg hover:bg-paper-darker flex items-center justify-center text-ink-lighter active:scale-95 transition-transform"
+            >
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                <path d="M5 12h14" />
+              </svg>
+            </button>
+            <button
+              onClick={fitToScreen}
+              className="px-2 h-9 rounded-lg hover:bg-paper-darker flex items-center justify-center text-xs text-ink-lighter min-w-[52px]"
+            >
+              {Math.round(zoom * 100)}%
+            </button>
+            <button
+              onClick={handleZoomIn}
+              className="w-9 h-9 rounded-lg hover:bg-paper-darker flex items-center justify-center text-ink-lighter active:scale-95 transition-transform"
+            >
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                <path d="M12 5v14M5 12h14" />
+              </svg>
+            </button>
+          </div>
+
+          {/* 右侧：功能按钮 */}
+          <div className="flex items-center gap-1">
+            <button
+              onClick={() => onShowCoordinatesChange(!showCoordinates)}
+              className={`px-3 h-9 text-xs rounded-lg transition-colors ${
+                showCoordinates ? 'text-ink bg-paper-darker' : 'text-ink-lighter hover:bg-paper-darker'
+              }`}
+            >
+              坐标
+            </button>
+            <button
+              onClick={() => onShowLegendChange(!showLegend)}
+              className={`px-3 h-9 text-xs rounded-lg transition-colors ${
+                showLegend ? 'text-ink bg-paper-darker' : 'text-ink-lighter hover:bg-paper-darker'
+              }`}
+            >
+              图例
+            </button>
+            {canUndo && (
+              <button
+                onClick={onUndo}
+                className="w-9 h-9 rounded-lg hover:bg-paper-darker flex items-center justify-center text-ink-lighter active:scale-95 transition-transform"
+              >
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                  <path d="M3 7v6h6M3 13a9 9 0 1 0 3-7.7L3 8" />
+                </svg>
+              </button>
+            )}
+          </div>
+        </div>
+      )}
+
+      {/* 移动端浮动缩放控件 — 右下角小按钮组 */}
+      {isMobile && (
+        <div className="absolute bottom-2 right-2 flex flex-col gap-1 z-10">
           <button
-            onClick={handleZoomOut}
-            className="w-9 h-9 rounded-lg hover:bg-paper-darker flex items-center justify-center text-ink-lighter active:scale-95 transition-transform"
+            onClick={handleZoomIn}
+            className="w-8 h-8 rounded-lg bg-paper-light/90 backdrop-blur-sm shadow-sm border border-paper-darker flex items-center justify-center text-ink-lighter active:scale-90 transition-transform"
           >
-            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-              <path d="M5 12h14" />
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5">
+              <path d="M12 5v14M5 12h14" />
             </svg>
           </button>
           <button
             onClick={fitToScreen}
-            className="px-2 h-9 rounded-lg hover:bg-paper-darker flex items-center justify-center text-xs text-ink-lighter min-w-[52px]"
+            className="h-7 px-1.5 rounded-lg bg-paper-light/90 backdrop-blur-sm shadow-sm border border-paper-darker flex items-center justify-center text-[10px] font-medium text-ink-lighter"
           >
             {Math.round(zoom * 100)}%
           </button>
           <button
-            onClick={handleZoomIn}
-            className="w-9 h-9 rounded-lg hover:bg-paper-darker flex items-center justify-center text-ink-lighter active:scale-95 transition-transform"
+            onClick={handleZoomOut}
+            className="w-8 h-8 rounded-lg bg-paper-light/90 backdrop-blur-sm shadow-sm border border-paper-darker flex items-center justify-center text-ink-lighter active:scale-90 transition-transform"
           >
-            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-              <path d="M12 5v14M5 12h14" />
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5">
+              <path d="M5 12h14" />
             </svg>
           </button>
         </div>
-
-        {/* 右侧：功能按钮 */}
-        <div className="flex items-center gap-1">
-          <button
-            onClick={() => onShowCoordinatesChange(!showCoordinates)}
-            className={`px-3 h-9 text-xs rounded-lg transition-colors ${
-              showCoordinates ? 'text-ink bg-paper-darker' : 'text-ink-lighter hover:bg-paper-darker'
-            }`}
-          >
-            坐标
-          </button>
-          <button
-            onClick={() => onShowLegendChange(!showLegend)}
-            className={`px-3 h-9 text-xs rounded-lg transition-colors ${
-              showLegend ? 'text-ink bg-paper-darker' : 'text-ink-lighter hover:bg-paper-darker'
-            }`}
-          >
-            图例
-          </button>
-          {canUndo && (
-            <button
-              onClick={onUndo}
-              className="w-9 h-9 rounded-lg hover:bg-paper-darker flex items-center justify-center text-ink-lighter active:scale-95 transition-transform"
-            >
-              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-                <path d="M3 7v6h6M3 13a9 9 0 1 0 3-7.7L3 8" />
-              </svg>
-            </button>
-          )}
-        </div>
-      </div>
+      )}
     </div>
   )
 }
