@@ -128,3 +128,59 @@ input[type='number'] {
 .animate-pulse-soft {
   animation: pulse-soft 1.5s ease-in-out infinite;
 }
+
+/* ============================================================
+   移动端专用样式
+   ============================================================ */
+
+/* Safe area 支持（iPhone 刘海/底部条） */
+.safe-area-top {
+  padding-top: env(safe-area-inset-top, 0px);
+}
+.safe-area-bottom {
+  padding-bottom: env(safe-area-inset-bottom, 0px);
+}
+
+/* 移动端滑杆 — 增大触摸区域 */
+.mobile-slider {
+  -webkit-appearance: none;
+  appearance: none;
+  height: 32px;
+  background: transparent;
+  outline: none;
+}
+.mobile-slider::-webkit-slider-runnable-track {
+  height: 4px;
+  border-radius: 2px;
+  background: #e0e0e0;
+}
+.mobile-slider::-webkit-slider-thumb {
+  -webkit-appearance: none;
+  appearance: none;
+  width: 28px;
+  height: 28px;
+  border-radius: 50%;
+  background: #1a1a1a;
+  cursor: pointer;
+  margin-top: -12px;
+  box-shadow: 0 2px 6px rgba(0,0,0,0.2);
+}
+.mobile-slider::-moz-range-track {
+  height: 4px;
+  border-radius: 2px;
+  background: #e0e0e0;
+}
+.mobile-slider::-moz-range-thumb {
+  width: 28px;
+  height: 28px;
+  border-radius: 50%;
+  background: #1a1a1a;
+  cursor: pointer;
+  border: none;
+  box-shadow: 0 2px 6px rgba(0,0,0,0.2);
+}
+
+/* 防止移动端双击缩放 */
+button, [role="button"] {
+  touch-action: manipulation;
+}

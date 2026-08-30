@@ -9,8 +9,8 @@ export default defineConfig({
       registerType: 'autoUpdate',
       includeAssets: ['data/palettes/bead-palettes.json'],
       manifest: {
-        name: '拼豆图纸生成器',
-        short_name: '拼豆生成器',
+        name: '甘薯么拼豆',
+        short_name: '甘薯么拼豆',
         description: '将任意图片转换为拼豆图纸，自动匹配颜色、统计数量、推荐缺色替换。',
         theme_color: '#1a1a1a',
         background_color: '#fafafa',

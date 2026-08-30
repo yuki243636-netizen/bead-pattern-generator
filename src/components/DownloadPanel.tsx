@@ -8,6 +8,7 @@ interface DownloadPanelProps {
 
 export default function DownloadPanel({ onDownload, onClose }: DownloadPanelProps) {
   const [format, setFormat] = useState<'png' | 'pdf'>('png')
+  // Note: format 'png' actually exports as JPG (see exporter.ts)
   const [includeGrid, setIncludeGrid] = useState(true)
   const [includeCoordinates, setIncludeCoordinates] = useState(false)
   const [includeColorLegend, setIncludeColorLegend] = useState(true)
@@ -46,7 +47,7 @@ export default function DownloadPanel({ onDownload, onClose }: DownloadPanelProp
                     : 'border-paper-darker text-ink-lighter hover:bg-paper-darker'
                 }`}
               >
-                <div>PNG</div>
+                <div>JPG</div>
                 <div className="text-[10px] font-normal opacity-70 mt-0.5">图片格式</div>
               </button>
               <button
@@ -111,7 +112,7 @@ export default function DownloadPanel({ onDownload, onClose }: DownloadPanelProp
             onClick={handleDownload}
             className="w-full py-2.5 text-sm font-semibold text-white bg-ink rounded-xl hover:bg-ink-light transition-colors mt-2"
           >
-            下载 {format.toUpperCase()}
+            下载 {format === 'png' ? 'JPG' : 'PDF'}
           </button>
         </div>
       </div>

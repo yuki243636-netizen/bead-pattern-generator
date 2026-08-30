@@ -23,8 +23,12 @@ import DownloadPanel from './components/DownloadPanel'
 import LoadingOverlay from './components/LoadingOverlay'
 import ErrorBanner from './components/ErrorBanner'
 import RefinePanel from './components/RefinePanel'
+import MobileLayout from './components/MobileLayout'
+import { useIsMobile } from './hooks/useIsMobile'
 
 export default function App() {
+  const isMobile = useIsMobile()
+
   // ========== 色卡数据 ==========
   const [palettes, setPalettes] = useState<Palette[]>([])
   const [currentPaletteId, setCurrentPaletteId] = useState('mard-221')
@@ -641,6 +645,79 @@ export default function App() {
   const canRedo = redoRef.current.length > 0
   const canRestoreOriginal = originalPattern !== null && historyRef.current.length > 1
 
+  // ========== 移动端布局 ==========
+  if (isMobile) {
+    return (
+      <MobileLayout
+        palettes={palettes}
+        currentPaletteId={currentPaletteId}
+        onPaletteChange={handlePaletteChange}
+        colors={colors}
+        colorMap={colorMap}
+        imagePreview={imagePreview}
+        imageDimensions={imageDimensions}
+        fileSize={fileSize}
+        onImageUpload={handleImageUpload}
+        onImageRemove={handleImageRemove}
+        boardSizeId={boardSizeId}
+        onBoardSizeChange={handleBoardSizeChange}
+        canvasWidth={canvasWidth}
+        canvasHeight={canvasHeight}
+        beadSize={beadSize}
+        onBeadSizeChange={setBeadSize}
+        matchMode={matchMode}
+        onMatchModeChange={setMatchMode}
+        maxColors={maxColors}
+        onMaxColorsChange={setMaxColors}
+        dither={dither}
+        onDitherChange={setDither}
+        debugMode={debugMode}
+        onDebugModeChange={setDebugMode}
+        onGenerate={handleGenerate}
+        canGenerate={!!imageElement}
+        displayResult={displayResult}
+        result={result}
+        loading={loading}
+        loadingStep={loadingStep}
+        error={error}
+        setError={setError}
+        showCoordinates={showCoordinates}
+        showLegend={showLegend}
+        zoom={zoom}
+        pan={pan}
+        onZoomChange={setZoom}
+        onPanChange={setPan}
+        onShowCoordinatesChange={setShowCoordinates}
+        onShowLegendChange={setShowLegend}
+        onUndo={handleUndo}
+        canUndo={canUndo}
+        onDownload={handleDownload}
+        refineMode={refineMode}
+        onRefineModeChange={setRefineMode}
+        highlightCode={highlightCode}
+        onHighlightCodeChange={setHighlightCode}
+        onColorReplace={handleColorReplace}
+        onPixelEdit={handlePixelEdit}
+        onBatchPixelEdit={handleBatchPixelEdit}
+        selectedCells={selectedCells}
+        onToggleCell={handleToggleCell}
+        onAddToSelection={handleAddToSelection}
+        onClearSelection={handleClearSelection}
+        brushColor={brushColor}
+        onBrushColorChange={setBrushColor}
+        onResetView={handleResetView}
+        onRestoreOriginal={handleRestoreOriginal}
+        canRestoreOriginal={canRestoreOriginal}
+        canRedo={canRedo}
+        onRefineUndo={handleRefineUndo}
+        onRefineRedo={handleRefineRedo}
+        resetViewSignal={resetViewSignal}
+        debugGrid={debugGrid}
+      />
+    )
+  }
+
+  // ========== 桌面端布局（保持不变）==========
   return (
     <div className="h-[100dvh] bg-paper flex flex-col overflow-hidden">
       {/* 顶部栏 — 精简 */}
@@ -655,7 +732,7 @@ export default function App() {
               <path d="M4 6h16M4 12h16M4 18h16" />
             </svg>
           </button>
-          <h1 className="text-sm font-semibold text-ink">拼豆图纸</h1>
+          <h1 className="text-sm font-semibold text-ink">甘薯么拼豆</h1>
         </div>
 
         <div className="flex items-center gap-2">

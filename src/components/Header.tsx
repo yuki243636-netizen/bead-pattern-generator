@@ -17,8 +17,8 @@ export default function Header({ onDownload, canDownload }: HeaderProps) {
           </svg>
         </div>
         <div>
-          <h1 className="text-sm font-bold text-ink leading-none">拼豆图纸生成器</h1>
-          <p className="text-[10px] text-ink-lightest mt-0.5 leading-none">Bead Pattern Generator</p>
+          <h1 className="text-sm font-bold text-ink leading-none">甘薯么拼豆</h1>
+          <p className="text-[10px] text-ink-lightest mt-0.5 leading-none">Sweet Potato Beads</p>
         </div>
       </div>
 
