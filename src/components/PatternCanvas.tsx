@@ -193,8 +193,17 @@ export default function PatternCanvas({
     const container = containerRef.current
     const canvas = canvasRef.current
     // 容器实际可用尺寸（减去 padding）
-    const containerW = container.clientWidth - 24
-    const containerH = container.clientHeight - 24
+    let containerW = container.clientWidth - 24
+    let containerH = container.clientHeight - 24
+
+    // 移动端容器高度可能为 0（布局未完成），回退到窗口尺寸
+    if (containerH < 50 && typeof window !== 'undefined') {
+      containerH = window.innerHeight * 0.55 - 24
+    }
+    if (containerW < 50 && typeof window !== 'undefined') {
+      containerW = window.innerWidth - 24
+    }
+
     const canvasW = canvas.width
     const canvasH = canvas.height
 
@@ -214,9 +223,9 @@ export default function PatternCanvas({
   useEffect(() => {
     if (result) {
       if (!hasResultRef.current) {
-        // 首次有结果时自适应
+        // 首次有结果时自适应 — 延迟 300ms 确保移动端布局完成
         hasResultRef.current = true
-        const timer = setTimeout(fitToScreen, 100)
+        const timer = setTimeout(fitToScreen, 300)
         return () => clearTimeout(timer)
       }
     } else {

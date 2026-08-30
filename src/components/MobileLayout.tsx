@@ -223,7 +223,7 @@ export default function MobileLayout(props: MobileLayoutProps) {
       </header>
 
       {/* ===== 画板区域（占 55-65% 高度）===== */}
-      <div className="flex-1 min-h-0 relative bg-paper">
+      <div className="flex-1 min-h-0 relative bg-paper flex flex-col">
         <PatternCanvas
           result={displayResult}
           colorMap={colorMap}
