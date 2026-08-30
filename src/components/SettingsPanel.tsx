@@ -1,7 +1,6 @@
 import type { ReactNode } from 'react'
 import type { Palette, BeadSize, MatchMode, ColorStat, ReplacementSuggestion, RefineMode, PaletteColor } from '../types'
 import ImageUploader from './ImageUploader'
-import ColorReplacement from './ColorReplacement'
 import RefinePanel from './RefinePanel'
 
 // ============================================================

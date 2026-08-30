@@ -293,9 +293,41 @@ export default function MobileLayout(props: MobileLayoutProps) {
 
       {/* ===== 底部操作区 ===== */}
       <div className="flex-shrink-0 bg-paper-light border-t border-paper-darker safe-area-bottom">
+        {/* 底部工具栏 — 按制作流程分层 */}
+        <div className="flex items-stretch border-b border-paper-darker">
+          {/* 制作基础设置 */}
+          <FlowTabButton
+            label="图片"
+            active={activeTab === 'upload'}
+            onClick={() => handleTabClick('upload')}
+          />
+          <FlowTabButton
+            label="板型"
+            active={activeTab === 'board'}
+            onClick={() => handleTabClick('board')}
+          />
+          <FlowTabButton
+            label="色卡"
+            active={activeTab === 'color'}
+            onClick={() => handleTabClick('color')}
+          />
+
+          {/* 分隔线 */}
+          <div className="w-px bg-paper-darker my-1.5 flex-shrink-0" />
+
+          {/* 图纸调整 */}
+          <FlowTabButton
+            label="精修"
+            active={activeTab === 'refine'}
+            onClick={() => handleTabClick('refine')}
+            disabled={!displayResult}
+            highlight
+          />
+        </div>
+
         {/* 展开面板区域 */}
         {activeTab && (
-          <div className="max-h-[35vh] overflow-y-auto border-b border-paper-darker animate-fade-in">
+          <div className="max-h-[28vh] overflow-y-auto border-b border-paper-darker animate-fade-in">
             <div className="p-3">
               {activeTab === 'upload' && (
                 <UploadPanel
@@ -366,13 +398,13 @@ export default function MobileLayout(props: MobileLayoutProps) {
         )}
 
         {/* 底部核心操作按钮 */}
-        <div className="flex gap-2 px-3 py-2 border-b border-paper-darker">
+        <div className="flex gap-2 px-3 py-2">
           <button
             onClick={handleGenerate}
             disabled={!canGenerate}
             className={`flex-1 py-2.5 text-sm font-semibold rounded-xl transition-all min-h-[44px] ${
               canGenerate
-                ? 'bg-ink text-white active:scale-[0.98]'
+                ? 'bg-paper-darker text-ink active:scale-[0.98]'
                 : 'bg-paper-darker text-ink-lightest'
             }`}
           >
@@ -383,37 +415,12 @@ export default function MobileLayout(props: MobileLayoutProps) {
             disabled={!displayResult}
             className={`flex-1 py-2.5 text-sm font-semibold rounded-xl transition-all min-h-[44px] ${
               displayResult
-                ? 'bg-paper-darker text-ink active:scale-[0.98]'
+                ? 'bg-ink text-white active:scale-[0.98]'
                 : 'bg-paper-darker text-ink-lightest'
             }`}
           >
             下载图纸
           </button>
-        </div>
-
-        {/* 底部工具栏 Tab */}
-        <div className="flex items-center justify-around px-1 py-1">
-          <TabButton
-            label="上传图片"
-            active={activeTab === 'upload'}
-            onClick={() => handleTabClick('upload')}
-          />
-          <TabButton
-            label="板型"
-            active={activeTab === 'board'}
-            onClick={() => handleTabClick('board')}
-          />
-          <TabButton
-            label="颜色"
-            active={activeTab === 'color'}
-            onClick={() => handleTabClick('color')}
-          />
-          <TabButton
-            label="精修"
-            active={activeTab === 'refine'}
-            onClick={() => handleTabClick('refine')}
-            disabled={!displayResult}
-          />
         </div>
       </div>
 
@@ -445,27 +452,33 @@ export default function MobileLayout(props: MobileLayoutProps) {
 }
 
 // ============================================================
-// Tab 按钮
+// 底部 Tab 按钮 — 简洁文字标签
 // ============================================================
-function TabButton({ label, active, onClick, disabled }: {
+function FlowTabButton({ label, active, onClick, disabled, highlight }: {
   label: string
+  step?: number
   active: boolean
   onClick: () => void
   disabled?: boolean
+  highlight?: boolean
 }) {
   return (
     <button
       onClick={onClick}
       disabled={disabled}
-      className={`flex-1 py-1.5 text-[11px] font-medium rounded-lg transition-colors min-h-[40px] ${
+      className={`flex-1 flex items-center justify-center py-1.5 transition-colors min-h-[44px] ${
         disabled
           ? 'text-ink-lightest'
           : active
-            ? 'text-ink bg-paper-darker'
-            : 'text-ink-lighter active:bg-paper-darker/50'
+            ? highlight
+              ? 'text-ink bg-amber-50'
+              : 'text-ink bg-paper-darker'
+            : highlight
+              ? 'text-amber-600 active:bg-paper-darker/50'
+              : 'text-ink-lighter active:bg-paper-darker/50'
       }`}
     >
-      {label}
+      <span className="text-[11px] font-medium">{label}</span>
     </button>
   )
 }

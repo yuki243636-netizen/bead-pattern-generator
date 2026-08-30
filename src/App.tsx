@@ -15,14 +15,8 @@ import { generateBeadPattern, type QuantizationResult, type DebugCellInfo } from
 import { detectBackgroundColors, filterGrid } from './utils/imageProcessing'
 import { BEAD_SIZE_PIXELS } from './utils/imageProcessing'
 import { exportPNG, exportPDF } from './utils/exporter'
-import Header from './components/Header'
-import SettingsPanel, { BOARD_SIZES, type BoardSizeId } from './components/SettingsPanel'
-import PatternCanvas from './components/PatternCanvas'
-import ColorReplacement from './components/ColorReplacement'
-import DownloadPanel from './components/DownloadPanel'
-import LoadingOverlay from './components/LoadingOverlay'
-import ErrorBanner from './components/ErrorBanner'
-import RefinePanel from './components/RefinePanel'
+import { BOARD_SIZES, type BoardSizeId } from './components/SettingsPanel'
+import DesktopLayout from './components/DesktopLayout'
 import MobileLayout from './components/MobileLayout'
 import { useIsMobile } from './hooks/useIsMobile'
 
@@ -717,284 +711,78 @@ export default function App() {
     )
   }
 
-  // ========== 桌面端布局（保持不变）==========
+  // ========== 桌面端布局 ==========
   return (
-    <div className="h-[100dvh] bg-paper flex flex-col overflow-hidden">
-      {/* 顶部栏 — 精简 */}
-      <header className="flex items-center justify-between px-4 py-2.5 border-b border-paper-darker bg-paper-light flex-shrink-0">
-        <div className="flex items-center gap-2">
-          {/* 设置按钮（移动端） */}
-          <button
-            onClick={() => setShowSettings(true)}
-            className="lg:hidden w-9 h-9 rounded-lg flex items-center justify-center text-ink-lighter hover:bg-paper-darker"
-          >
-            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-              <path d="M4 6h16M4 12h16M4 18h16" />
-            </svg>
-          </button>
-          <h1 className="text-sm font-semibold text-ink">甘薯么拼豆</h1>
-        </div>
-
-        <div className="flex items-center gap-2">
-          {displayResult && (
-            <>
-              <div className="flex items-baseline gap-1.5">
-                <span className="text-lg font-bold text-ink">{displayResult.totalBeads.toLocaleString()}</span>
-                <span className="text-[10px] text-ink-lighter">颗</span>
-                <span className="text-lg font-bold text-ink ml-2">{displayResult.stats.length}</span>
-                <span className="text-[10px] text-ink-lighter">色</span>
-              </div>
-            </>
-          )}
-          <button
-            onClick={() => displayResult && setShowDownload(true)}
-            disabled={!displayResult}
-            className={`px-3 py-1.5 text-xs font-medium rounded-lg transition-colors ${
-              displayResult
-                ? 'text-white bg-ink hover:bg-ink-light'
-                : 'text-ink-lightest bg-paper-darker cursor-not-allowed'
-            }`}
-          >
-            下载
-          </button>
-        </div>
-      </header>
-
-      {error && <ErrorBanner message={error} onClose={() => setError(null)} />}
-
-      {/* Detail Loss 提示横幅 */}
-      {detailWarning && !error && (
-        <div className="flex-shrink-0 bg-amber-50 border-b border-amber-200 px-4 py-2.5 flex items-start gap-2">
-          <svg className="w-4 h-4 text-amber-600 mt-0.5 flex-shrink-0" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-            <path d="M12 9v4M12 17h.01M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z" />
-          </svg>
-          <div className="flex-1 min-w-0">
-            <p className="text-xs text-amber-800 leading-relaxed">{detailWarning}</p>
-            {recommendedBoardSize && (
-              <button
-                onClick={() => {
-                  const boardId = BOARD_SIZES.find(b =>
-                    `${b.width}×${b.height}` === recommendedBoardSize
-                  )?.id
-                  if (boardId) handleBoardSizeChange(boardId)
-                  setDetailWarning(null)
-                  setRecommendedBoardSize(null)
-                }}
-                className="mt-1.5 px-3 py-1 text-xs font-medium text-white bg-amber-600 hover:bg-amber-700 rounded-md transition-colors"
-              >
-                切换到 {recommendedBoardSize}
-              </button>
-            )}
-          </div>
-          <button
-            onClick={() => { setDetailWarning(null); setRecommendedBoardSize(null) }}
-            className="text-amber-400 hover:text-amber-600 flex-shrink-0"
-          >
-            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-              <path d="M18 6L6 18M6 6l12 12" />
-            </svg>
-          </button>
-        </div>
-      )}
-
-      {/* 主体区域 */}
-      <div className="flex-1 flex overflow-hidden min-h-0">
-        {/* iPad/桌面端：左侧设置面板 */}
-        <aside className="hidden lg:flex w-80 border-r border-paper-darker bg-paper-light overflow-y-auto flex-shrink-0">
-          <div className="p-4 w-full">
-            <SettingsPanel
-              palettes={palettes}
-              currentPaletteId={currentPaletteId}
-              onPaletteChange={handlePaletteChange}
-              imagePreview={imagePreview}
-              imageDimensions={imageDimensions}
-              fileSize={fileSize}
-              canvasWidth={canvasWidth}
-              canvasHeight={canvasHeight}
-              boardSizeId={boardSizeId}
-              onBoardSizeChange={handleBoardSizeChange}
-              beadSize={beadSize}
-              matchMode={matchMode}
-              maxColors={maxColors}
-              onBeadSizeChange={setBeadSize}
-              onMatchModeChange={setMatchMode}
-              onMaxColorsChange={setMaxColors}
-              dither={dither}
-              onDitherChange={setDither}
-              debugMode={debugMode}
-              onDebugModeChange={setDebugMode}
-              onImageUpload={handleImageUpload}
-              onImageRemove={handleImageRemove}
-              onGenerate={handleGenerate}
-              canGenerate={!!imageElement}
-              hasResult={!!result}
-              resultStats={result?.stats || []}
-              displayTotalBeads={displayResult?.totalBeads || 0}
-              colors={colors}
-              colorMap={colorMap}
-              refineMode={refineMode}
-              onRefineModeChange={setRefineMode}
-              highlightCode={highlightCode}
-              onHighlightCodeChange={setHighlightCode}
-              onColorReplace={handleColorReplace}
-              onPixelEdit={handlePixelEdit}
-              onBatchPixelEdit={handleBatchPixelEdit}
-              selectedCells={selectedCells}
-              onToggleCell={handleToggleCell}
-              onAddToSelection={handleAddToSelection}
-              onClearSelection={handleClearSelection}
-              brushColor={brushColor}
-              onBrushColorChange={setBrushColor}
-              onUndo={handleRefineUndo}
-              onRedo={handleRefineRedo}
-              canUndo={canUndo}
-              canRedo={canRedo}
-              onResetView={handleResetView}
-              onRestoreOriginal={handleRestoreOriginal}
-              canRestoreOriginal={canRestoreOriginal}
-            />
-          </div>
-        </aside>
-
-        {/* 画布区域 — 全屏占据 */}
-        <main className="flex-1 flex flex-col overflow-hidden min-w-0">
-          <PatternCanvas
-            result={displayResult}
-            colorMap={colorMap}
-            beadSize={beadSize}
-            showCoordinates={showCoordinates}
-            showLegend={showLegend}
-            zoom={zoom}
-            pan={pan}
-            onZoomChange={setZoom}
-            onPanChange={setPan}
-            onShowCoordinatesChange={setShowCoordinates}
-            onShowLegendChange={setShowLegend}
-            onUndo={handleUndo}
-            canUndo={canUndo}
-            imagePreview={imagePreview}
-            onGenerate={handleGenerate}
-            canGenerate={!!imageElement}
-            debugMode={debugMode}
-            debugGrid={debugGrid}
-            mapping={(result as QuantizationResult)?.mapping}
-            foregroundBBox={(result as QuantizationResult)?.foregroundBBox}
-            edgeInfo={(result as QuantizationResult)?.edgeInfo}
-            edgeCellCount={(result as QuantizationResult)?.edgeCellCount}
-            refineMode={refineMode}
-            highlightCode={highlightCode}
-            onCellClick={(x, y) => {
-              if (refineMode === 'pixelEdit' && brushColor) {
-                handlePixelEdit(x, y, brushColor)
-              } else if (refineMode === 'pixelEdit') {
-                handleToggleCell(x, y)
-              }
-            }}
-            onCellDrag={(x, y) => {
-              if (refineMode === 'pixelEdit' && brushColor) {
-                handlePixelEdit(x, y, brushColor)
-              } else if (refineMode === 'pixelEdit') {
-                handleAddToSelection(x, y)
-              }
-            }}
-            selectedCells={selectedCells}
-            brushColor={brushColor}
-            resetViewSignal={resetViewSignal}
-          />
-        </main>
-      </div>
-
-      {/* 移动端：设置全屏弹窗 */}
-      {showSettings && (
-        <div className="lg:hidden fixed inset-0 z-50 flex flex-col" onClick={() => setShowSettings(false)}>
-          <div className="absolute inset-0 bg-black/40" />
-          <div
-            className="relative bg-paper-light rounded-t-2xl flex-1 overflow-y-auto animate-slide-up mt-12"
-            onClick={e => e.stopPropagation()}
-          >
-            <div className="sticky top-0 bg-paper-light border-b border-paper-darker px-4 py-3 flex items-center justify-between z-10">
-              <h2 className="font-semibold text-ink">设置</h2>
-              <button onClick={() => setShowSettings(false)} className="w-8 h-8 rounded-lg flex items-center justify-center text-ink-lighter hover:bg-paper-darker">
-                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-                  <path d="M18 6L6 18M6 6l12 12" />
-                </svg>
-              </button>
-            </div>
-            <div className="p-4">
-              <SettingsPanel
-                palettes={palettes}
-                currentPaletteId={currentPaletteId}
-                onPaletteChange={handlePaletteChange}
-                imagePreview={imagePreview}
-                imageDimensions={imageDimensions}
-                fileSize={fileSize}
-                canvasWidth={canvasWidth}
-                canvasHeight={canvasHeight}
-                boardSizeId={boardSizeId}
-                onBoardSizeChange={handleBoardSizeChange}
-                beadSize={beadSize}
-                matchMode={matchMode}
-                maxColors={maxColors}
-                onBeadSizeChange={setBeadSize}
-                onMatchModeChange={setMatchMode}
-                onMaxColorsChange={setMaxColors}
-                dither={dither}
-                onDitherChange={setDither}
-                debugMode={debugMode}
-                onDebugModeChange={setDebugMode}
-                onImageUpload={handleImageUpload}
-                onImageRemove={handleImageRemove}
-                onGenerate={handleGenerate}
-                canGenerate={!!imageElement}
-                isMobile
-                hasResult={!!result}
-                resultStats={result?.stats || []}
-                displayTotalBeads={displayResult?.totalBeads || 0}
-                colors={colors}
-                colorMap={colorMap}
-                refineMode={refineMode}
-                onRefineModeChange={setRefineMode}
-                highlightCode={highlightCode}
-                onHighlightCodeChange={setHighlightCode}
-                onColorReplace={handleColorReplace}
-                onPixelEdit={handlePixelEdit}
-                onBatchPixelEdit={handleBatchPixelEdit}
-                selectedCells={selectedCells}
-                onToggleCell={handleToggleCell}
-                onAddToSelection={handleAddToSelection}
-                onClearSelection={handleClearSelection}
-                brushColor={brushColor}
-                onBrushColorChange={setBrushColor}
-                onUndo={handleRefineUndo}
-                onRedo={handleRefineRedo}
-                canUndo={canUndo}
-                canRedo={canRedo}
-                onResetView={handleResetView}
-                onRestoreOriginal={handleRestoreOriginal}
-                canRestoreOriginal={canRestoreOriginal}
-              />
-            </div>
-          </div>
-        </div>
-      )}
-
-      {/* 下载弹窗 */}
-      {showDownload && displayResult && (
-        <DownloadPanel
-          onDownload={handleDownload}
-          onClose={() => setShowDownload(false)}
-        />
-      )}
-
-      {/* 加载遮罩 */}
-      {loading && <LoadingOverlay step={loadingStep} />}
-
-      {/* 错误提示 */}
-      {error && (
-        <div className="fixed bottom-4 left-1/2 -translate-x-1/2 px-4 py-2 bg-red-500 text-white text-sm rounded-lg shadow-lg z-50 animate-fade-in">
-          {error}
-        </div>
-      )}
-    </div>
+    <DesktopLayout
+      imagePreview={imagePreview}
+      imageDimensions={imageDimensions}
+      fileSize={fileSize}
+      onImageUpload={handleImageUpload}
+      onImageRemove={handleImageRemove}
+      boardSizeId={boardSizeId}
+      onBoardSizeChange={handleBoardSizeChange}
+      canvasWidth={canvasWidth}
+      canvasHeight={canvasHeight}
+      beadSize={beadSize}
+      onBeadSizeChange={setBeadSize}
+      palettes={palettes}
+      currentPaletteId={currentPaletteId}
+      onPaletteChange={handlePaletteChange}
+      matchMode={matchMode}
+      onMatchModeChange={setMatchMode}
+      maxColors={maxColors}
+      onMaxColorsChange={setMaxColors}
+      colorCount={colors.length}
+      dither={dither}
+      onDitherChange={setDither}
+      debugMode={debugMode}
+      onDebugModeChange={setDebugMode}
+      onGenerate={handleGenerate}
+      canGenerate={!!imageElement}
+      displayResult={displayResult}
+      result={result}
+      colors={colors}
+      colorMap={colorMap}
+      refineMode={refineMode}
+      onRefineModeChange={setRefineMode}
+      highlightCode={highlightCode}
+      onHighlightCodeChange={setHighlightCode}
+      onColorReplace={handleColorReplace}
+      onPixelEdit={handlePixelEdit}
+      onBatchPixelEdit={handleBatchPixelEdit}
+      selectedCells={selectedCells}
+      onToggleCell={handleToggleCell}
+      onAddToSelection={handleAddToSelection}
+      onClearSelection={handleClearSelection}
+      brushColor={brushColor}
+      onBrushColorChange={setBrushColor}
+      onUndo={handleRefineUndo}
+      onRedo={handleRefineRedo}
+      canUndo={canUndo}
+      canRedo={canRedo}
+      onResetView={handleResetView}
+      onRestoreOriginal={handleRestoreOriginal}
+      canRestoreOriginal={canRestoreOriginal}
+      resetViewSignal={resetViewSignal}
+      showCoordinates={showCoordinates}
+      showLegend={showLegend}
+      zoom={zoom}
+      pan={pan}
+      onZoomChange={setZoom}
+      onPanChange={setPan}
+      onShowCoordinatesChange={setShowCoordinates}
+      onShowLegendChange={setShowLegend}
+      onUndoCanvas={handleUndo}
+      onDownload={handleDownload}
+      debugGrid={debugGrid}
+      loading={loading}
+      loadingStep={loadingStep}
+      error={error}
+      setError={setError}
+      detailWarning={detailWarning}
+      setDetailWarning={setDetailWarning}
+      recommendedBoardSize={recommendedBoardSize}
+      replacements={replacements}
+    />
   )
 }
