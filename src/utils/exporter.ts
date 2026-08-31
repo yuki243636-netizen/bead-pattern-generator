@@ -117,7 +117,7 @@ function openImageInNewTab(dataUrl: string): void {
           <style>
             * { margin: 0; padding: 0; box-sizing: border-box; }
             body {
-              background: #1a1a1a;
+              background: #2B1E26;
               display: flex;
               flex-direction: column;
               align-items: center;

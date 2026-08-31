@@ -3,13 +3,13 @@
 @tailwind utilities;
 
 :root {
-  --color-bg: #F0F4F4;
+  --color-bg: #FAF5F7;
   --color-surface: #FFFFFF;
-  --color-border: #DDE3E3;
-  --color-text: #1A1A2E;
-  --color-text-secondary: #636E72;
-  --color-text-tertiary: #9FA3A7;
-  --color-accent: #5B7C8B;
+  --color-border: #E8DDE2;
+  --color-text: #2B1E26;
+  --color-text-secondary: #8A7A82;
+  --color-text-tertiary: #B5A8AE;
+  --color-accent: #E091A6;
 }
 
 * {
@@ -42,11 +42,11 @@ body {
   background: transparent;
 }
 ::-webkit-scrollbar-thumb {
-  background: #DDE3E3;
+  background: #E8DDE2;
   border-radius: 3px;
 }
 ::-webkit-scrollbar-thumb:hover {
-  background: #C5CCCC;
+  background: #D4C5CC;
 }
 
 /* Range 滑块样式 */
@@ -55,7 +55,7 @@ input[type='range'] {
   appearance: none;
   height: 4px;
   border-radius: 2px;
-  background: #DDE3E3;
+  background: #E8DDE2;
   outline: none;
 }
 input[type='range']::-webkit-slider-thumb {
@@ -64,10 +64,10 @@ input[type='range']::-webkit-slider-thumb {
   width: 18px;
   height: 18px;
   border-radius: 50%;
-  background: #5B7C8B;
+  background: #E091A6;
   cursor: pointer;
   transition: transform 0.15s ease;
-  box-shadow: 0 2px 6px rgba(91, 124, 139, 0.3);
+  box-shadow: 0 2px 6px rgba(224, 145, 166, 0.3);
 }
 input[type='range']::-webkit-slider-thumb:hover {
   transform: scale(1.15);
@@ -76,10 +76,10 @@ input[type='range']::-moz-range-thumb {
   width: 18px;
   height: 18px;
   border-radius: 50%;
-  background: #5B7C8B;
+  background: #E091A6;
   cursor: pointer;
   border: none;
-  box-shadow: 0 2px 6px rgba(91, 124, 139, 0.3);
+  box-shadow: 0 2px 6px rgba(224, 145, 166, 0.3);
 }
 
 /* Number input 去除箭头 */
@@ -154,7 +154,7 @@ input[type='number'] {
 .mobile-slider::-webkit-slider-runnable-track {
   height: 4px;
   border-radius: 2px;
-  background: #DDE3E3;
+  background: #E8DDE2;
 }
 .mobile-slider::-webkit-slider-thumb {
   -webkit-appearance: none;
@@ -162,24 +162,24 @@ input[type='number'] {
   width: 28px;
   height: 28px;
   border-radius: 50%;
-  background: #5B7C8B;
+  background: #E091A6;
   cursor: pointer;
   margin-top: -12px;
-  box-shadow: 0 2px 8px rgba(91, 124, 139, 0.3);
+  box-shadow: 0 2px 8px rgba(224, 145, 166, 0.3);
 }
 .mobile-slider::-moz-range-track {
   height: 4px;
   border-radius: 2px;
-  background: #DDE3E3;
+  background: #E8DDE2;
 }
 .mobile-slider::-moz-range-thumb {
   width: 28px;
   height: 28px;
   border-radius: 50%;
-  background: #5B7C8B;
+  background: #E091A6;
   cursor: pointer;
   border: none;
-  box-shadow: 0 2px 8px rgba(91, 124, 139, 0.3);
+  box-shadow: 0 2px 8px rgba(224, 145, 166, 0.3);
 }
 
 /* 防止移动端双击缩放 */
