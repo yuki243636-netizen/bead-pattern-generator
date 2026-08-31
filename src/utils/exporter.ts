@@ -128,6 +128,11 @@ function openImageInNewTab(dataUrl: string): void {
  * 1. 移动端：Web Share API（系统分享面板，可"存储图像"到相册）
  * 2. data URL + <a download>（桌面端和部分 Android）
  * 3. 兜底：新窗口打开图片，长按保存
+ *
+ * 返回值：
+ * - 'shared' — 通过 Web Share 完成下载（用户已操作）
+ * - 'downloaded' — 通过 <a download> 完成下载
+ * - 'manual' — 打开了新窗口，需手动长按保存
  */
 export async function exportPNG(
   grid: PatternGrid,
@@ -135,7 +140,7 @@ export async function exportPNG(
   beadSize: number,
   options: DownloadOptions,
   stats?: ColorStat[]
-): Promise<void> {
+): Promise<'shared' | 'downloaded' | 'manual'> {
   // 图纸模式导出（方格 + 网格线 + 颜色编号）
   const asBeads = !options.includeGrid
   const showCodes = !asBeads
@@ -175,7 +180,7 @@ export async function exportPNG(
         exportCanvas.toBlob((b) => resolve(b!), 'image/jpeg', 0.92)
       })
       const shared = await tryWebShare(blob, filename)
-      if (shared) return
+      if (shared) return 'shared'
     }
 
     // 策略2: data URL + <a download>（部分 Android 浏览器可用）
@@ -185,9 +190,13 @@ export async function exportPNG(
     if (wechat) {
       // 微信内置浏览器 <a download> 必定失败，直接打开新窗口
       setTimeout(() => openImageInNewTab(dataUrl), 300)
+      return 'manual'
     }
+
+    return 'downloaded'
   } else {
     // 桌面端：直接 data URL 下载
     downloadViaAnchor(dataUrl, filename)
+    return 'downloaded'
   }
 }

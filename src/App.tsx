@@ -58,6 +58,7 @@ export default function App() {
   const [loading, setLoading] = useState(false)
   const [loadingStep, setLoadingStep] = useState('')
   const [error, setError] = useState<string | null>(null)
+  const [toast, setToast] = useState<string | null>(null)
 
   // ========== 缺色替换 ==========
   const [missingCodes, setMissingCodes] = useState<Set<string>>(new Set())
@@ -444,8 +445,17 @@ export default function App() {
     if (!displayResult) return
 
     const beadPx = BEAD_SIZE_PIXELS[beadSize]
-    await exportPNG(displayResult.grid, colorMap, beadPx, options, displayResult.stats)
+    const result = await exportPNG(displayResult.grid, colorMap, beadPx, options, displayResult.stats)
     setShowDownload(false)
+
+    if (result === 'shared') {
+      setToast('保存成功！图片已保存到相册')
+    } else if (result === 'downloaded') {
+      setToast('保存成功！图片已开始下载')
+    } else {
+      setToast('已打开图片，长按图片可保存到相册')
+    }
+    setTimeout(() => setToast(null), 3000)
   }
 
   const handleToggleExcludeColor = (code: string) => {
@@ -624,29 +634,30 @@ export default function App() {
   // ========== 移动端布局 ==========
   if (isMobile) {
     return (
-      <MobileLayout
-        palettes={palettes}
-        currentPaletteId={currentPaletteId}
-        onPaletteChange={handlePaletteChange}
-        colors={colors}
-        colorMap={colorMap}
-        imagePreview={imagePreview}
-        imageDimensions={imageDimensions}
-        fileSize={fileSize}
-        onImageUpload={handleImageUpload}
-        onImageRemove={handleImageRemove}
-        boardSizeId={boardSizeId}
-        onBoardSizeChange={handleBoardSizeChange}
-        canvasWidth={canvasWidth}
-        canvasHeight={canvasHeight}
-        beadSize={beadSize}
-        onBeadSizeChange={setBeadSize}
-        matchMode={matchMode}
-        onMatchModeChange={setMatchMode}
-        maxColors={maxColors}
-        onMaxColorsChange={setMaxColors}
-        dither={dither}
-        onDitherChange={setDither}
+      <>
+        <MobileLayout
+          palettes={palettes}
+          currentPaletteId={currentPaletteId}
+          onPaletteChange={handlePaletteChange}
+          colors={colors}
+          colorMap={colorMap}
+          imagePreview={imagePreview}
+          imageDimensions={imageDimensions}
+          fileSize={fileSize}
+          onImageUpload={handleImageUpload}
+          onImageRemove={handleImageRemove}
+          boardSizeId={boardSizeId}
+          onBoardSizeChange={handleBoardSizeChange}
+          canvasWidth={canvasWidth}
+          canvasHeight={canvasHeight}
+          beadSize={beadSize}
+          onBeadSizeChange={setBeadSize}
+          matchMode={matchMode}
+          onMatchModeChange={setMatchMode}
+          maxColors={maxColors}
+          onMaxColorsChange={setMaxColors}
+          dither={dither}
+          onDitherChange={setDither}
         debugMode={debugMode}
         onDebugModeChange={setDebugMode}
         onGenerate={handleGenerate}
@@ -689,12 +700,15 @@ export default function App() {
         onRefineRedo={handleRefineRedo}
         resetViewSignal={resetViewSignal}
         debugGrid={debugGrid}
-      />
+        />
+        <Toast message={toast} />
+      </>
     )
   }
 
   // ========== 桌面端布局 ==========
   return (
+    <>
     <DesktopLayout
       imagePreview={imagePreview}
       imageDimensions={imageDimensions}
@@ -766,5 +780,25 @@ export default function App() {
       recommendedBoardSize={recommendedBoardSize}
       replacements={replacements}
     />
+    <Toast message={toast} />
+    </>
+  )
+}
+
+// ============================================================
+// Toast 成功提示组件
+// ============================================================
+function Toast({ message }: { message: string | null }) {
+  if (!message) return null
+  return (
+    <div
+      className="fixed top-16 left-1/2 -translate-x-1/2 z-[100] px-5 py-3 bg-green-600 text-white text-sm font-medium rounded-xl shadow-lg animate-fade-in flex items-center gap-2 max-w-[90vw]"
+      style={{ pointerEvents: 'none' }}
+    >
+      <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5">
+        <path d="M20 6L9 17l-5-5" />
+      </svg>
+      <span>{message}</span>
+    </div>
   )
 }
