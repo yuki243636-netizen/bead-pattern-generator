@@ -1,4 +1,3 @@
-import type { BeadSize } from '../../types'
 import { BOARD_SIZES, type BoardSizeId } from '../SettingsPanel'
 
 interface BoardPanelProps {
@@ -6,17 +5,13 @@ interface BoardPanelProps {
   onBoardSizeChange: (id: BoardSizeId) => void
   canvasWidth: number
   canvasHeight: number
-  beadSize: BeadSize
-  onBeadSizeChange: (val: BeadSize) => void
 }
 
 export default function BoardPanel({
   boardSizeId,
   onBoardSizeChange,
   canvasWidth,
-  canvasHeight,
-  beadSize,
-  onBeadSizeChange
+  canvasHeight
 }: BoardPanelProps) {
   return (
     <div className="space-y-5">
@@ -56,30 +51,6 @@ export default function BoardPanel({
           <span className="ml-auto text-[10px] text-ink-lightest">
             ≈{(canvasWidth * 0.5).toFixed(0)}×{(canvasHeight * 0.5).toFixed(0)}cm
           </span>
-        </div>
-      </div>
-
-      {/* 拼豆尺寸 */}
-      <div className="space-y-2">
-        <h3 className="text-xs font-semibold text-ink-lighter uppercase tracking-wide">拼豆尺寸</h3>
-        <div className="flex gap-1.5">
-          {([
-            { value: 'mini' as const, label: 'Mini' },
-            { value: 'standard' as const, label: 'Standard' },
-            { value: 'large' as const, label: 'Large' }
-          ]).map(opt => (
-            <button
-              key={opt.value}
-              onClick={() => onBeadSizeChange(opt.value)}
-              className={`flex-1 py-1.5 text-xs font-medium rounded-full transition-colors ${
-                beadSize === opt.value
-                  ? 'bg-accent-teal text-white'
-                  : 'bg-paper text-ink-lighter hover:bg-paper-dark shadow-soft'
-              }`}
-            >
-              {opt.label}
-            </button>
-          ))}
         </div>
       </div>
     </div>

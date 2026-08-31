@@ -2,7 +2,6 @@ import { useState } from 'react'
 import type {
   Palette,
   PaletteColor,
-  BeadSize,
   MatchMode,
   RefineMode,
   GenerateResult,
@@ -41,8 +40,6 @@ interface MobileLayoutProps {
   onBoardSizeChange: (id: BoardSizeId) => void
   canvasWidth: number
   canvasHeight: number
-  beadSize: BeadSize
-  onBeadSizeChange: (val: BeadSize) => void
 
   // 颜色匹配
   matchMode: MatchMode
@@ -125,8 +122,6 @@ export default function MobileLayout(props: MobileLayoutProps) {
     onBoardSizeChange,
     canvasWidth,
     canvasHeight,
-    beadSize,
-    onBeadSizeChange,
     matchMode,
     onMatchModeChange,
     maxColors,
@@ -217,7 +212,7 @@ export default function MobileLayout(props: MobileLayoutProps) {
         <PatternCanvas
           result={displayResult}
           colorMap={colorMap}
-          beadSize={beadSize}
+          beadSize="standard"
           showCoordinates={showCoordinates}
           showLegend={showLegend}
           zoom={zoom}
@@ -339,24 +334,6 @@ export default function MobileLayout(props: MobileLayoutProps) {
                   <div className={`text-[9px] leading-tight mt-0.5 ${boardSizeId === board.id ? 'text-white/70' : 'text-ink-lightest'}`}>
                     {board.width}×{board.height}
                   </div>
-                </button>
-              ))}
-            </div>
-            {/* 豆子大小 */}
-            <div className="flex gap-1 flex-shrink-0">
-              {([
-                { value: 'mini' as const, label: 'M' },
-                { value: 'standard' as const, label: 'S' },
-                { value: 'large' as const, label: 'L' }
-              ]).map(opt => (
-                <button
-                  key={opt.value}
-                  onClick={() => onBeadSizeChange(opt.value)}
-                  className={`w-7 h-7 text-[10px] font-bold rounded-lg transition-all ${
-                    beadSize === opt.value ? 'bg-accent-teal text-white shadow-soft' : 'bg-paper text-ink-lighter'
-                  }`}
-                >
-                  {opt.label}
                 </button>
               ))}
             </div>
@@ -498,7 +475,7 @@ export default function MobileLayout(props: MobileLayoutProps) {
             onClick={() => {
               if (displayResult) {
                 onDownload({
-                  format: 'png',
+                  format: 'jpg',
                   includeGrid: true,
                   includeCoordinates: false,
                   includeColorLegend: true,

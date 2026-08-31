@@ -27,8 +27,20 @@ function isWeChatBrowser(): boolean {
 }
 
 /**
+ * 检测是否为 iOS 设备（iPhone/iPad）
+ * iOS Safari 的 <a download> 不支持下载图片到相册
+ */
+function isIOS(): boolean {
+  if (typeof navigator === 'undefined') return false
+  const ua = navigator.userAgent
+  const isIOSDevice = /iPad|iPhone|iPod/.test(ua)
+  const isIPadOS = navigator.platform === 'MacIntel' && navigator.maxTouchPoints > 1
+  return isIOSDevice || isIPadOS
+}
+
+/**
  * 通过 Web Share API 分享图片文件
- * 返回 true 表示成功调用了分享（用户可能保存或取消）
+ * 返回 true 表示成功调用了分享
  */
 async function tryWebShare(blob: Blob, filename: string): Promise<boolean> {
   const nav = navigator as Navigator & {
@@ -67,6 +79,25 @@ function downloadViaAnchor(dataUrl: string, filename: string): void {
   // 延迟移除，确保点击事件已派发
   setTimeout(() => {
     if (link.parentNode) link.parentNode.removeChild(link)
+  }, 200)
+}
+
+/**
+ * 通过 <a download> + blob URL 触发下载（备选方案）
+ */
+function downloadViaBlobUrl(blob: Blob, filename: string): void {
+  const url = URL.createObjectURL(blob)
+  const link = document.createElement('a')
+  link.download = filename
+  link.href = url
+  link.target = '_self'
+  link.rel = 'noopener'
+  link.style.cssText = 'display:none;position:fixed;top:0;left:0;'
+  document.body.appendChild(link)
+  link.click()
+  setTimeout(() => {
+    if (link.parentNode) link.parentNode.removeChild(link)
+    URL.revokeObjectURL(url)
   }, 200)
 }
 
@@ -125,16 +156,16 @@ function openImageInNewTab(dataUrl: string): void {
  * 导出图纸为 JPG
  *
  * 下载策略（按优先级）：
- * 1. 移动端：Web Share API（系统分享面板，可"存储图像"到相册）
- * 2. data URL + <a download>（桌面端和部分 Android）
- * 3. 兜底：新窗口打开图片，长按保存
+ * 1. 桌面端/Android：data URL + <a download>（直接下载）
+ * 2. iOS 移动端：Web Share API（系统分享面板，可"存储图像"到相册）
+ * 3. 微信浏览器：新窗口打开图片，长按保存
  *
  * 返回值：
- * - 'shared' — 通过 Web Share 完成下载（用户已操作）
+ * - 'shared' — 通过 Web Share 完成下载
  * - 'downloaded' — 通过 <a download> 完成下载
  * - 'manual' — 打开了新窗口，需手动长按保存
  */
-export async function exportPNG(
+export async function exportJPG(
   grid: PatternGrid,
   colorMap: Map<string, PaletteColor>,
   beadSize: number,
@@ -158,45 +189,66 @@ export async function exportPNG(
   )
 
   // 填充白色背景（JPG 不支持透明）
+  // 对大画板进行自适应降采样，防止画布过大导致 toDataURL/toBlob 失败
+  const MAX_EXPORT_DIM = 4096 // 最大导出边长
+  const srcW = canvas.width
+  const srcH = canvas.height
+  const scale = Math.min(1, MAX_EXPORT_DIM / Math.max(srcW, srcH))
+
   const exportCanvas = document.createElement('canvas')
-  exportCanvas.width = canvas.width
-  exportCanvas.height = canvas.height
+  exportCanvas.width = Math.round(srcW * scale)
+  exportCanvas.height = Math.round(srcH * scale)
   const ctx = exportCanvas.getContext('2d')!
   ctx.fillStyle = '#FFFFFF'
   ctx.fillRect(0, 0, exportCanvas.width, exportCanvas.height)
-  ctx.drawImage(canvas, 0, 0)
+  ctx.imageSmoothingEnabled = true
+  ctx.imageSmoothingQuality = 'high'
+  ctx.drawImage(canvas, 0, 0, exportCanvas.width, exportCanvas.height)
 
   const filename = `甘薯么拼豆-${Date.now()}.jpg`
   const mobile = isMobileDevice()
   const wechat = isWeChatBrowser()
+  const ios = isIOS()
 
-  // 生成 data URL（比 blob URL 兼容性更好）
+  // 生成 blob（用于 Web Share 和 blob URL 下载）
+  const blob = await new Promise<Blob>((resolve, reject) => {
+    exportCanvas.toBlob(
+      (b) => b ? resolve(b) : reject(new Error('toBlob failed')),
+      'image/jpeg',
+      0.92
+    )
+  })
+
+  // 生成 data URL（用于 <a download> 和新窗口兜底）
   const dataUrl = exportCanvas.toDataURL('image/jpeg', 0.92)
 
-  if (mobile) {
-    // 策略1: Web Share API（最可靠，但不支持微信内置浏览器）
-    if (!wechat) {
-      const blob = await new Promise<Blob>((resolve) => {
-        exportCanvas.toBlob((b) => resolve(b!), 'image/jpeg', 0.92)
-      })
-      const shared = await tryWebShare(blob, filename)
-      if (shared) return 'shared'
-    }
-
-    // 策略2: data URL + <a download>（部分 Android 浏览器可用）
-    downloadViaAnchor(dataUrl, filename)
-
-    // 策略3: 微信浏览器或下载可能失败时，延迟打开新窗口
-    if (wechat) {
-      // 微信内置浏览器 <a download> 必定失败，直接打开新窗口
-      setTimeout(() => openImageInNewTab(dataUrl), 300)
-      return 'manual'
-    }
-
-    return 'downloaded'
-  } else {
-    // 桌面端：直接 data URL 下载
-    downloadViaAnchor(dataUrl, filename)
-    return 'downloaded'
+  // ====== 微信浏览器：直接新窗口打开 ======
+  if (wechat) {
+    setTimeout(() => openImageInNewTab(dataUrl), 100)
+    return 'manual'
   }
+
+  // ====== 桌面端和 Android：直接 <a download> 下载 ======
+  if (!mobile || !ios) {
+    // 先尝试 blob URL 下载（更可靠，不会有 data URL 长度限制）
+    try {
+      downloadViaBlobUrl(blob, filename)
+      return 'downloaded'
+    } catch {
+      // blob URL 失败则用 data URL
+      downloadViaAnchor(dataUrl, filename)
+      return 'downloaded'
+    }
+  }
+
+  // ====== iOS 移动端：Web Share API 是唯一可靠保存到相册的方式 ======
+  const shared = await tryWebShare(blob, filename)
+  if (shared) return 'shared'
+
+  // Web Share 不可用或失败，尝试 data URL 下载
+  downloadViaAnchor(dataUrl, filename)
+
+  // iOS 上 <a download> 可能只是在新页面打开图片，延迟打开兜底窗口
+  setTimeout(() => openImageInNewTab(dataUrl), 500)
+  return 'manual'
 }

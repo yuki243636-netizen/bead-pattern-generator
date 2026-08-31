@@ -122,7 +122,7 @@ export interface LoadingStep {
 
 /** 下载选项 */
 export interface DownloadOptions {
-  format: 'png' | 'pdf';
+  format: 'jpg';
   includeGrid: boolean;
   includeCoordinates: boolean;
   includeColorLegend: boolean;

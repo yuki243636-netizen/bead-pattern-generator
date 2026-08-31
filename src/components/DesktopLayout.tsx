@@ -1,6 +1,6 @@
 import { useState, useRef } from 'react'
 import type {
-  Palette, PaletteColor, BeadSize, MatchMode, DownloadOptions,
+  Palette, PaletteColor, MatchMode, DownloadOptions,
   GenerateResult, ReplacementSuggestion, RefineMode,
 } from '../types'
 import type { QuantizationResult, DebugCellInfo } from '../utils/colorQuantization'
@@ -31,8 +31,6 @@ interface DesktopLayoutProps {
   onBoardSizeChange: (id: BoardSizeId) => void
   canvasWidth: number
   canvasHeight: number
-  beadSize: BeadSize
-  onBeadSizeChange: (val: BeadSize) => void
   // Color
   palettes: Palette[]
   currentPaletteId: string
@@ -221,8 +219,6 @@ export default function DesktopLayout(props: DesktopLayoutProps) {
                 onBoardSizeChange={props.onBoardSizeChange}
                 canvasWidth={props.canvasWidth}
                 canvasHeight={props.canvasHeight}
-                beadSize={props.beadSize}
-                onBeadSizeChange={props.onBeadSizeChange}
               />
             </section>
 
@@ -297,7 +293,7 @@ export default function DesktopLayout(props: DesktopLayoutProps) {
             <PatternCanvas
               result={props.displayResult}
               colorMap={props.colorMap}
-              beadSize={props.beadSize}
+              beadSize="standard"
               showCoordinates={props.showCoordinates}
               showLegend={props.showLegend}
               zoom={props.zoom}

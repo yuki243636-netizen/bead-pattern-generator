@@ -14,7 +14,7 @@ import { getPalettes, getColors, getDefaultPaletteId, findReplacementColors } fr
 import { generateBeadPattern, type QuantizationResult, type DebugCellInfo } from './utils/colorQuantization'
 import { detectBackgroundColors, filterGrid } from './utils/imageProcessing'
 import { BEAD_SIZE_PIXELS } from './utils/imageProcessing'
-import { exportPNG } from './utils/exporter'
+import { exportJPG } from './utils/exporter'
 import { BOARD_SIZES, type BoardSizeId } from './components/SettingsPanel'
 import DesktopLayout from './components/DesktopLayout'
 import MobileLayout from './components/MobileLayout'
@@ -445,15 +445,21 @@ export default function App() {
     if (!displayResult) return
 
     const beadPx = BEAD_SIZE_PIXELS[beadSize]
-    const result = await exportPNG(displayResult.grid, colorMap, beadPx, options, displayResult.stats)
-    setShowDownload(false)
+    try {
+      const result = await exportJPG(displayResult.grid, colorMap, beadPx, options, displayResult.stats)
+      setShowDownload(false)
 
-    if (result === 'shared') {
-      setToast('保存成功！图片已保存到相册')
-    } else if (result === 'downloaded') {
-      setToast('保存成功！图片已开始下载')
-    } else {
-      setToast('已打开图片，长按图片可保存到相册')
+      if (result === 'shared') {
+        setToast('保存成功！图片已保存到相册')
+      } else if (result === 'downloaded') {
+        setToast('保存成功！图片已开始下载')
+      } else {
+        setToast('已打开图片，长按图片可保存到相册')
+      }
+    } catch (e) {
+      console.error('Download failed:', e)
+      setShowDownload(false)
+      setError('下载失败，请稍后重试。')
     }
     setTimeout(() => setToast(null), 3000)
   }
@@ -650,8 +656,6 @@ export default function App() {
           onBoardSizeChange={handleBoardSizeChange}
           canvasWidth={canvasWidth}
           canvasHeight={canvasHeight}
-          beadSize={beadSize}
-          onBeadSizeChange={setBeadSize}
           matchMode={matchMode}
           onMatchModeChange={setMatchMode}
           maxColors={maxColors}
@@ -719,8 +723,6 @@ export default function App() {
       onBoardSizeChange={handleBoardSizeChange}
       canvasWidth={canvasWidth}
       canvasHeight={canvasHeight}
-      beadSize={beadSize}
-      onBeadSizeChange={setBeadSize}
       palettes={palettes}
       currentPaletteId={currentPaletteId}
       onPaletteChange={handlePaletteChange}

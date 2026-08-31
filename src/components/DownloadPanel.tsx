@@ -13,7 +13,7 @@ export default function DownloadPanel({ onDownload, onClose }: DownloadPanelProp
   const [includeBeadCount, setIncludeBeadCount] = useState(true)
 
   const handleDownload = () => {
-    onDownload({ format: 'png', includeGrid, includeCoordinates, includeColorLegend, includeBeadCount })
+    onDownload({ format: 'jpg', includeGrid, includeCoordinates, includeColorLegend, includeBeadCount })
   }
 
   return (

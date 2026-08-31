@@ -1,5 +1,5 @@
 import type { ReactNode } from 'react'
-import type { Palette, BeadSize, MatchMode, ColorStat, ReplacementSuggestion, RefineMode, PaletteColor } from '../types'
+import type { Palette, MatchMode, ColorStat, ReplacementSuggestion, RefineMode, PaletteColor } from '../types'
 import ImageUploader from './ImageUploader'
 import RefinePanel from './RefinePanel'
 
@@ -27,10 +27,8 @@ interface SettingsPanelProps {
   canvasHeight: number
   boardSizeId: BoardSizeId
   onBoardSizeChange: (board: BoardSizeId) => void
-  beadSize: BeadSize
   matchMode: MatchMode
   maxColors: number
-  onBeadSizeChange: (val: BeadSize) => void
   onMatchModeChange: (val: MatchMode) => void
   onMaxColorsChange: (val: number) => void
   dither: boolean
@@ -91,10 +89,8 @@ export default function SettingsPanel(props: SettingsPanelProps) {
     canvasHeight,
     boardSizeId,
     onBoardSizeChange,
-    beadSize,
     matchMode,
     maxColors,
-    onBeadSizeChange,
     onMatchModeChange,
     onMaxColorsChange,
     dither,
@@ -187,29 +183,6 @@ export default function SettingsPanel(props: SettingsPanelProps) {
               ≈{(canvasWidth * 0.5).toFixed(0)}×{(canvasHeight * 0.5).toFixed(0)}cm
             </span>
           </div>
-        </div>
-      </Section>
-
-      {/* 拼豆尺寸 */}
-      <Section title="拼豆尺寸">
-        <div className="flex gap-1.5">
-          {([
-            { value: 'mini' as const, label: 'Mini' },
-            { value: 'standard' as const, label: 'Standard' },
-            { value: 'large' as const, label: 'Large' }
-          ]).map(opt => (
-            <button
-              key={opt.value}
-              onClick={() => onBeadSizeChange(opt.value)}
-              className={`flex-1 py-1.5 text-xs font-medium rounded-lg transition-colors ${
-                beadSize === opt.value
-                  ? 'bg-ink text-white'
-                  : 'bg-paper-darker text-ink-lighter hover:bg-paper-dark'
-              }`}
-            >
-              {opt.label}
-            </button>
-          ))}
         </div>
       </Section>
 
