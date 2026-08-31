@@ -11,7 +11,6 @@ import { BOARD_SIZES, type BoardSizeId } from './SettingsPanel'
 import PatternCanvas from './PatternCanvas'
 import ImageUploader from './ImageUploader'
 import RefinePanel from './RefinePanel'
-import DownloadPanel from './DownloadPanel'
 import type { QuantizationResult, DebugCellInfo } from '../utils/colorQuantization'
 
 // ============================================================
@@ -179,7 +178,6 @@ export default function MobileLayout(props: MobileLayoutProps) {
   } = props
 
   const [activeTab, setActiveTab] = useState<MobileTab>(null)
-  const [showDownload, setShowDownload] = useState(false)
 
   const currentPalette = palettes.find(p => p.id === currentPaletteId)
   const colorCount = colors.length || currentPalette?.colors.length || 0
@@ -499,7 +497,17 @@ export default function MobileLayout(props: MobileLayoutProps) {
             重新生成
           </button>
           <button
-            onClick={() => displayResult && setShowDownload(true)}
+            onClick={() => {
+              if (displayResult) {
+                onDownload({
+                  format: 'png',
+                  includeGrid: true,
+                  includeCoordinates: false,
+                  includeColorLegend: true,
+                  includeBeadCount: true,
+                })
+              }
+            }}
             disabled={!displayResult}
             className={`flex-1 py-2.5 text-sm font-semibold rounded-xl transition-all min-h-[44px] ${
               displayResult
@@ -513,13 +521,6 @@ export default function MobileLayout(props: MobileLayoutProps) {
       </div>
 
       {/* ===== 弹窗 ===== */}
-      {showDownload && displayResult && (
-        <DownloadPanel
-          onDownload={(opts) => { onDownload(opts); setShowDownload(false) }}
-          onClose={() => setShowDownload(false)}
-        />
-      )}
-
       {loading && (
         <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/40 backdrop-blur-sm">
           <div className="bg-paper-light rounded-2xl px-6 py-5 flex flex-col items-center gap-3">
