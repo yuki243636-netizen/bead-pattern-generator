@@ -1,6 +1,6 @@
 // ============================================================
 // 图纸导出工具
-// JPG 导出 — 多策略下载，兼容桌面/移动端各种浏览器
+// JPG 导出 — 简化下载策略，优先直接下载
 // ============================================================
 
 import type { PatternGrid, PaletteColor, ColorStat, DownloadOptions } from '../types'
@@ -27,63 +27,7 @@ function isWeChatBrowser(): boolean {
 }
 
 /**
- * 检测是否为 iOS 设备（iPhone/iPad）
- * iOS Safari 的 <a download> 不支持下载图片到相册
- */
-function isIOS(): boolean {
-  if (typeof navigator === 'undefined') return false
-  const ua = navigator.userAgent
-  const isIOSDevice = /iPad|iPhone|iPod/.test(ua)
-  const isIPadOS = navigator.platform === 'MacIntel' && navigator.maxTouchPoints > 1
-  return isIOSDevice || isIPadOS
-}
-
-/**
- * 通过 Web Share API 分享图片文件
- * 返回 true 表示成功调用了分享
- */
-async function tryWebShare(blob: Blob, filename: string): Promise<boolean> {
-  const nav = navigator as Navigator & {
-    canShare?: (data: { files: File[] }) => boolean
-    share?: (data: { files: File[]; title?: string }) => Promise<void>
-  }
-
-  if (!nav.canShare || !nav.share) return false
-
-  const file = new File([blob], filename, { type: 'image/jpeg' })
-  if (!nav.canShare({ files: [file] })) return false
-
-  try {
-    await nav.share({ files: [file], title: '甘薯么拼豆' })
-    return true
-  } catch (err) {
-    // 用户取消分享不算失败
-    if (err instanceof DOMException && err.name === 'AbortError') return true
-    return false
-  }
-}
-
-/**
- * 通过 <a download> + data URL 触发下载
- * 将 link 挂载到 DOM 后再点击，提高兼容性
- */
-function downloadViaAnchor(dataUrl: string, filename: string): void {
-  const link = document.createElement('a')
-  link.download = filename
-  link.href = dataUrl
-  link.target = '_self'
-  link.rel = 'noopener'
-  link.style.cssText = 'display:none;position:fixed;top:0;left:0;'
-  document.body.appendChild(link)
-  link.click()
-  // 延迟移除，确保点击事件已派发
-  setTimeout(() => {
-    if (link.parentNode) link.parentNode.removeChild(link)
-  }, 200)
-}
-
-/**
- * 通过 <a download> + blob URL 触发下载（备选方案）
+ * 通过 <a download> + blob URL 触发下载
  */
 function downloadViaBlobUrl(blob: Blob, filename: string): void {
   const url = URL.createObjectURL(blob)
@@ -102,68 +46,81 @@ function downloadViaBlobUrl(blob: Blob, filename: string): void {
 }
 
 /**
- * 最后兜底：在新窗口打开图片，用户可长按保存
+ * 通过 <a download> + data URL 触发下载
  */
-function openImageInNewTab(dataUrl: string): void {
-  const w = window.open('', '_blank')
-  if (w) {
-    w.document.write(`
-      <!DOCTYPE html>
-      <html>
-        <head>
-          <meta charset="utf-8">
-          <meta name="viewport" content="width=device-width, initial-scale=1.0">
-          <title>长按图片保存到相册</title>
-          <style>
-            * { margin: 0; padding: 0; box-sizing: border-box; }
-            body {
-              background: #2B1E26;
-              display: flex;
-              flex-direction: column;
-              align-items: center;
-              justify-content: center;
-              min-height: 100vh;
-              padding: 20px;
-              font-family: -apple-system, sans-serif;
-            }
-            p {
-              color: #fff;
-              font-size: 15px;
-              font-weight: 600;
-              margin-bottom: 16px;
-            }
-            img {
-              max-width: 95vw;
-              max-height: 75vh;
-              border-radius: 8px;
-              -webkit-touch-callout: default;
-              -webkit-user-select: auto;
-              user-select: auto;
-            }
-          </style>
-        </head>
-        <body>
-          <p>长按图片保存到相册</p>
-          <img src="${dataUrl}" alt="拼豆图纸" />
-        </body>
-      </html>
-    `)
-    w.document.close()
+function downloadViaDataUrl(dataUrl: string, filename: string): void {
+  const link = document.createElement('a')
+  link.download = filename
+  link.href = dataUrl
+  link.target = '_self'
+  link.rel = 'noopener'
+  link.style.cssText = 'display:none;position:fixed;top:0;left:0;'
+  document.body.appendChild(link)
+  link.click()
+  setTimeout(() => {
+    if (link.parentNode) link.parentNode.removeChild(link)
+  }, 200)
+}
+
+/**
+ * 通过 Web Share API 分享图片文件
+ */
+async function tryWebShare(blob: Blob, filename: string): Promise<boolean> {
+  const nav = navigator as Navigator & {
+    canShare?: (data: { files: File[] }) => boolean
+    share?: (data: { files: File[]; title?: string }) => Promise<void>
+  }
+
+  if (!nav.canShare || !nav.share) return false
+
+  const file = new File([blob], filename, { type: 'image/jpeg' })
+  if (!nav.canShare({ files: [file] })) return false
+
+  try {
+    await nav.share({ files: [file], title: '甘薯么拼豆' })
+    return true
+  } catch (err) {
+    if (err instanceof DOMException && err.name === 'AbortError') return true
+    return false
+  }
+}
+
+/**
+ * 微信浏览器：在当前页面内注入图片覆盖层，用户长按保存
+ * 不用 window.open（会被微信拦截）
+ */
+function showInlineImageOverlay(dataUrl: string): void {
+  const overlay = document.createElement('div')
+  overlay.id = '__bead_download_overlay'
+  overlay.style.cssText = `
+    position:fixed;inset:0;z-index:9999;background:rgba(0,0,0,0.85);
+    display:flex;flex-direction:column;align-items:center;justify-content:center;
+    padding:20px;font-family:-apple-system,sans-serif;
+  `
+  overlay.innerHTML = `
+    <p style="color:#fff;font-size:15px;font-weight:600;margin-bottom:16px;">长按图片保存到相册</p>
+    <img src="${dataUrl}" style="max-width:90vw;max-height:70vh;border-radius:8px;-webkit-touch-callout:default;-webkit-user-select:auto;user-select:auto;" alt="拼豆图纸" />
+    <button id="__bead_dl_close" style="margin-top:20px;padding:10px 32px;background:#E091A6;color:#fff;border:none;border-radius:24px;font-size:14px;font-weight:600;">关闭</button>
+  `
+  document.body.appendChild(overlay)
+  const closeBtn = document.getElementById('__bead_dl_close')
+  if (closeBtn) {
+    closeBtn.onclick = () => overlay.remove()
   }
 }
 
 /**
  * 导出图纸为 JPG
  *
- * 下载策略（按优先级）：
- * 1. 桌面端/Android：data URL + <a download>（直接下载）
- * 2. iOS 移动端：Web Share API（系统分享面板，可"存储图像"到相册）
- * 3. 微信浏览器：新窗口打开图片，长按保存
+ * 下载策略（简化版）：
+ * 1. 所有平台先尝试 <a download> + blob URL（桌面/Android 直接下载）
+ * 2. 移动端如果 <a download> 可能无效，尝试 Web Share API
+ * 3. 微信浏览器：显示内嵌图片覆盖层，长按保存
  *
  * 返回值：
- * - 'shared' — 通过 Web Share 完成下载
- * - 'downloaded' — 通过 <a download> 完成下载
- * - 'manual' — 打开了新窗口，需手动长按保存
+ * - 'shared' — 通过 Web Share 完成
+ * - 'downloaded' — 通过 <a download> 完成
+ * - 'manual' — 显示了内嵌图片，需手动长按保存（仅微信）
  */
 export async function exportJPG(
   grid: PatternGrid,
@@ -172,32 +129,23 @@ export async function exportJPG(
   options: DownloadOptions,
   stats?: ColorStat[]
 ): Promise<'shared' | 'downloaded' | 'manual'> {
-  // 图纸模式导出（方格 + 网格线 + 颜色编号）
+  // 渲染图纸画布
   const asBeads = !options.includeGrid
   const showCodes = !asBeads
 
   const canvas = renderPatternToCanvas(
-    grid,
-    colorMap,
-    beadSize,
-    options.includeGrid,
-    options.includeCoordinates,
-    asBeads,
-    showCodes,
-    options.includeColorLegend && !asBeads,
-    stats
+    grid, colorMap, beadSize,
+    options.includeGrid, options.includeCoordinates,
+    asBeads, showCodes,
+    options.includeColorLegend && !asBeads, stats
   )
 
-  // 填充白色背景（JPG 不支持透明）
-  // 对大画板进行自适应降采样，防止画布过大导致 toDataURL/toBlob 失败
-  const MAX_EXPORT_DIM = 4096 // 最大导出边长
-  const srcW = canvas.width
-  const srcH = canvas.height
-  const scale = Math.min(1, MAX_EXPORT_DIM / Math.max(srcW, srcH))
-
+  // 填充白色背景 + 自适应降采样
+  const MAX_DIM = 4096
+  const scale = Math.min(1, MAX_DIM / Math.max(canvas.width, canvas.height))
   const exportCanvas = document.createElement('canvas')
-  exportCanvas.width = Math.round(srcW * scale)
-  exportCanvas.height = Math.round(srcH * scale)
+  exportCanvas.width = Math.round(canvas.width * scale)
+  exportCanvas.height = Math.round(canvas.height * scale)
   const ctx = exportCanvas.getContext('2d')!
   ctx.fillStyle = '#FFFFFF'
   ctx.fillRect(0, 0, exportCanvas.width, exportCanvas.height)
@@ -208,47 +156,45 @@ export async function exportJPG(
   const filename = `甘薯么拼豆-${Date.now()}.jpg`
   const mobile = isMobileDevice()
   const wechat = isWeChatBrowser()
-  const ios = isIOS()
 
-  // 生成 blob（用于 Web Share 和 blob URL 下载）
+  // 生成 blob
   const blob = await new Promise<Blob>((resolve, reject) => {
     exportCanvas.toBlob(
       (b) => b ? resolve(b) : reject(new Error('toBlob failed')),
-      'image/jpeg',
-      0.92
+      'image/jpeg', 0.92
     )
   })
 
-  // 生成 data URL（用于 <a download> 和新窗口兜底）
+  // 生成 data URL
   const dataUrl = exportCanvas.toDataURL('image/jpeg', 0.92)
 
-  // ====== 微信浏览器：直接新窗口打开 ======
+  // ====== 微信浏览器：内嵌图片覆盖层 ======
   if (wechat) {
-    setTimeout(() => openImageInNewTab(dataUrl), 100)
+    showInlineImageOverlay(dataUrl)
     return 'manual'
   }
 
-  // ====== 桌面端和 Android：直接 <a download> 下载 ======
-  if (!mobile || !ios) {
-    // 先尝试 blob URL 下载（更可靠，不会有 data URL 长度限制）
+  // ====== 桌面端：直接 blob URL 下载 ======
+  if (!mobile) {
     try {
       downloadViaBlobUrl(blob, filename)
-      return 'downloaded'
     } catch {
-      // blob URL 失败则用 data URL
-      downloadViaAnchor(dataUrl, filename)
-      return 'downloaded'
+      downloadViaDataUrl(dataUrl, filename)
     }
+    return 'downloaded'
   }
 
-  // ====== iOS 移动端：Web Share API 是唯一可靠保存到相册的方式 ======
+  // ====== 移动端（非微信）：先试 Web Share，再试 <a download> ======
+  // Web Share API 是移动端保存到相册最可靠的方式
   const shared = await tryWebShare(blob, filename)
   if (shared) return 'shared'
 
-  // Web Share 不可用或失败，尝试 data URL 下载
-  downloadViaAnchor(dataUrl, filename)
-
-  // iOS 上 <a download> 可能只是在新页面打开图片，延迟打开兜底窗口
-  setTimeout(() => openImageInNewTab(dataUrl), 500)
-  return 'manual'
+  // Web Share 不可用或失败，尝试 <a download>
+  try {
+    downloadViaBlobUrl(blob, filename)
+    return 'downloaded'
+  } catch {
+    downloadViaDataUrl(dataUrl, filename)
+    return 'downloaded'
+  }
 }

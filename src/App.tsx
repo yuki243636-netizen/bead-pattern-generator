@@ -454,7 +454,7 @@ export default function App() {
       } else if (result === 'downloaded') {
         setToast('保存成功！图片已开始下载')
       } else {
-        setToast('已打开图片，长按图片可保存到相册')
+        setToast('长按图片可保存到相册')
       }
     } catch (e) {
       console.error('Download failed:', e)
@@ -794,13 +794,13 @@ function Toast({ message }: { message: string | null }) {
   if (!message) return null
   return (
     <div
-      className="fixed top-16 left-1/2 -translate-x-1/2 z-[100] px-5 py-3 bg-accent-teal text-white text-sm font-medium rounded-2xl shadow-elevated animate-fade-in flex items-center gap-2 max-w-[90vw]"
+      className="fixed top-4 left-1/2 -translate-x-1/2 z-[100] px-3.5 py-2 bg-accent-teal text-white text-xs font-medium rounded-full shadow-elevated animate-fade-in flex items-center gap-1.5 max-w-[80vw] whitespace-nowrap"
       style={{ pointerEvents: 'none' }}
     >
-      <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5">
+      <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" className="flex-shrink-0">
         <path d="M20 6L9 17l-5-5" />
       </svg>
-      <span>{message}</span>
+      <span className="truncate">{message}</span>
     </div>
   )
 }
