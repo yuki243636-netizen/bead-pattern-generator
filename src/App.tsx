@@ -14,7 +14,7 @@ import { getPalettes, getColors, getDefaultPaletteId, findReplacementColors } fr
 import { generateBeadPattern, type QuantizationResult, type DebugCellInfo } from './utils/colorQuantization'
 import { detectBackgroundColors, filterGrid } from './utils/imageProcessing'
 import { BEAD_SIZE_PIXELS } from './utils/imageProcessing'
-import { exportPNG, exportPDF } from './utils/exporter'
+import { exportPNG } from './utils/exporter'
 import { BOARD_SIZES, type BoardSizeId } from './components/SettingsPanel'
 import DesktopLayout from './components/DesktopLayout'
 import MobileLayout from './components/MobileLayout'
@@ -444,25 +444,7 @@ export default function App() {
     if (!displayResult) return
 
     const beadPx = BEAD_SIZE_PIXELS[beadSize]
-    const palette = palettes.find(p => p.id === currentPaletteId)
-
-    if (options.format === 'png') {
-      await exportPNG(displayResult.grid, colorMap, beadPx, options, displayResult.stats)
-    } else {
-      exportPDF(
-        displayResult.grid,
-        colorMap,
-        displayResult.stats,
-        displayResult.totalBeads,
-        beadPx,
-        options,
-        {
-          paletteName: palette?.name_cn || palette?.name || '',
-          beadSize: beadSize,
-          canvasSize: `${canvasWidth}×${canvasHeight}`
-        }
-      )
-    }
+    await exportPNG(displayResult.grid, colorMap, beadPx, options, displayResult.stats)
     setShowDownload(false)
   }
 

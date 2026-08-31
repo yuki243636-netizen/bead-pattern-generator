@@ -280,7 +280,7 @@ function ColorReplaceTool(props: RefinePanelProps) {
             onClick={() => setShowAllPalette(!showAllPalette)}
             className="w-full flex items-center justify-between py-1 px-1.5 text-[10px] font-medium text-ink-lighter hover:bg-paper-darker/30 rounded-md transition-colors"
           >
-            <span>{showAllPalette ? '收起画板颜色' : `画板全部颜色 (${boardColors.length}色)`}</span>
+            <span>{showAllPalette ? '收起画板颜色' : `画板其他颜色 (${boardColors.length}色)`}</span>
             <svg
               width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"
               className={`transition-transform ${showAllPalette ? 'rotate-180' : ''}`}

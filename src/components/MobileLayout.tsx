@@ -561,19 +561,21 @@ function FlowTabButton({ label, active, onClick, disabled, highlight }: {
     <button
       onClick={onClick}
       disabled={disabled}
-      className={`flex-1 flex items-center justify-center py-1.5 transition-colors min-h-[44px] ${
+      className={`flex-1 flex flex-col items-center justify-center py-1.5 transition-all min-h-[44px] relative ${
         disabled
           ? 'text-ink-lightest'
           : active
-            ? highlight
-              ? 'text-ink bg-amber-50'
-              : 'text-ink bg-paper-darker'
+            ? 'text-ink bg-ink/8 font-bold'
             : highlight
               ? 'text-amber-600 active:bg-paper-darker/50'
               : 'text-ink-lighter active:bg-paper-darker/50'
       }`}
     >
       <span className="text-[11px] font-medium">{label}</span>
+      {/* 底部高亮指示条 */}
+      {active && (
+        <div className={`absolute bottom-0 left-1/2 -translate-x-1/2 w-8 h-[3px] rounded-full ${highlight ? 'bg-amber-500' : 'bg-ink'}`} />
+      )}
     </button>
   )
 }
