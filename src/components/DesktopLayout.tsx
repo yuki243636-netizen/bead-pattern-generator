@@ -142,6 +142,7 @@ export default function DesktopLayout(props: DesktopLayoutProps) {
       {/* 顶部 Header */}
       <header className="flex items-center justify-between px-4 py-2.5 border-b border-paper-darker bg-paper-light flex-shrink-0">
         <div className="flex items-center gap-2">
+          <img src="/icon-192.png" alt="logo" className="w-6 h-6 rounded-md flex-shrink-0 object-cover" />
           <h1 className="text-sm font-semibold text-ink">甘薯么拼豆</h1>
           <span className="text-[10px] text-ink-lightest">Sweet Potato Beads</span>
         </div>

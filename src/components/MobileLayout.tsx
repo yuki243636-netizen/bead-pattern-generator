@@ -198,14 +198,7 @@ export default function MobileLayout(props: MobileLayoutProps) {
       {/* ===== 顶部导航栏 ===== */}
       <header className="flex items-center justify-between px-3 py-2 border-b border-paper-darker bg-paper-light flex-shrink-0 safe-area-top">
         <div className="flex items-center gap-2">
-          <div className="w-7 h-7 rounded-lg bg-ink flex items-center justify-center flex-shrink-0">
-            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="white" strokeWidth="2">
-              <rect x="3" y="3" width="7" height="7" rx="1" />
-              <rect x="14" y="3" width="7" height="7" rx="1" />
-              <rect x="3" y="14" width="7" height="7" rx="1" />
-              <rect x="14" y="14" width="7" height="7" rx="1" />
-            </svg>
-          </div>
+          <img src="/icon-192.png" alt="logo" className="w-7 h-7 rounded-lg flex-shrink-0 object-cover" />
           <h1 className="text-sm font-semibold text-ink">甘薯么拼豆</h1>
         </div>
 
