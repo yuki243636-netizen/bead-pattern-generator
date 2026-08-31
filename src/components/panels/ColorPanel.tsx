@@ -40,7 +40,7 @@ export default function ColorPanel({
         <select
           value={currentPaletteId}
           onChange={e => onPaletteChange(e.target.value)}
-          className="w-full px-3 py-2 text-sm border border-paper-darker rounded-lg bg-paper-light focus:border-ink focus:outline-none cursor-pointer"
+          className="w-full px-3 py-2 text-sm rounded-xl bg-paper-light shadow-soft focus:outline-none cursor-pointer"
         >
           {palettes.map(p => (
             <option key={p.id} value={p.id}>
@@ -68,20 +68,20 @@ export default function ColorPanel({
         <div className="flex gap-1.5">
           <button
             onClick={() => onMatchModeChange('standard')}
-            className={`flex-1 py-1.5 text-xs font-medium rounded-lg transition-colors ${
+            className={`flex-1 py-1.5 text-xs font-medium rounded-full transition-colors ${
               matchMode === 'standard'
-                ? 'bg-ink text-white'
-                : 'bg-paper-darker text-ink-lighter hover:bg-paper-dark'
+                ? 'bg-accent-teal text-white'
+                : 'bg-paper text-ink-lighter hover:bg-paper-dark shadow-soft'
             }`}
           >
             标准
           </button>
           <button
             onClick={() => onMatchModeChange('limited')}
-            className={`flex-1 py-1.5 text-xs font-medium rounded-lg transition-colors ${
+            className={`flex-1 py-1.5 text-xs font-medium rounded-full transition-colors ${
               matchMode === 'limited'
-                ? 'bg-ink text-white'
-                : 'bg-paper-darker text-ink-lighter hover:bg-paper-dark'
+                ? 'bg-accent-teal text-white'
+                : 'bg-paper text-ink-lighter hover:bg-paper-dark shadow-soft'
             }`}
           >
             限定颜色数
@@ -113,13 +113,13 @@ export default function ColorPanel({
         {/* 抖动开关 */}
         <button
           onClick={() => onDitherChange(!dither)}
-          className="flex items-center justify-between w-full px-3 py-2 rounded-lg bg-paper-darker/50 hover:bg-paper-darker transition-colors"
+          className="flex items-center justify-between w-full px-3 py-2 rounded-xl bg-paper shadow-soft hover:bg-paper-dark transition-colors"
         >
           <div className="flex flex-col items-start">
             <span className="text-xs font-medium text-ink-lighter">抖动 (Dither)</span>
             <span className="text-[10px] text-ink-lightest">受控有序抖动，仅限渐变区域</span>
           </div>
-          <div className={`w-9 h-5 rounded-full transition-colors flex items-center ${dither ? 'bg-ink' : 'bg-paper-darker'}`}>
+          <div className={`w-9 h-5 rounded-full transition-colors flex items-center ${dither ? 'bg-accent-teal' : 'bg-paper-dark'}`}>
             <div className={`w-4 h-4 bg-white rounded-full shadow transition-transform ${dither ? 'translate-x-4' : 'translate-x-0.5'}`} />
           </div>
         </button>
@@ -127,13 +127,13 @@ export default function ColorPanel({
         {/* 调试模式开关 */}
         <button
           onClick={() => onDebugModeChange(!debugMode)}
-          className="flex items-center justify-between w-full px-3 py-2 rounded-lg bg-paper-darker/50 hover:bg-paper-darker transition-colors"
+          className="flex items-center justify-between w-full px-3 py-2 rounded-xl bg-paper shadow-soft hover:bg-paper-dark transition-colors"
         >
           <div className="flex flex-col items-start">
             <span className="text-xs font-medium text-ink-lighter">调试模式 (Debug)</span>
             <span className="text-[10px] text-ink-lightest">显示每格原始色→匹配色→Delta E</span>
           </div>
-          <div className={`w-9 h-5 rounded-full transition-colors flex items-center ${debugMode ? 'bg-ink' : 'bg-paper-darker'}`}>
+          <div className={`w-9 h-5 rounded-full transition-colors flex items-center ${debugMode ? 'bg-accent-teal' : 'bg-paper-dark'}`}>
             <div className={`w-4 h-4 bg-white rounded-full shadow transition-transform ${debugMode ? 'translate-x-4' : 'translate-x-0.5'}`} />
           </div>
         </button>

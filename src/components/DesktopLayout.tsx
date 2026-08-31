@@ -140,7 +140,7 @@ export default function DesktopLayout(props: DesktopLayoutProps) {
       />
 
       {/* 顶部 Header */}
-      <header className="flex items-center justify-between px-4 py-2.5 border-b border-paper-darker bg-paper-light flex-shrink-0">
+      <header className="flex items-center justify-between px-6 py-3.5 bg-paper-light shadow-soft flex-shrink-0">
         <div className="flex items-center gap-2">
           <img src="/icon-192.png" alt="logo" className="w-6 h-6 rounded-md flex-shrink-0 object-cover" />
           <h1 className="text-sm font-semibold text-ink">甘薯么拼豆</h1>
@@ -160,12 +160,12 @@ export default function DesktopLayout(props: DesktopLayoutProps) {
 
       {/* Detail Loss 提示 */}
       {props.detailWarning && !props.error && (
-        <div className="flex-shrink-0 bg-amber-50 border-b border-amber-200 px-4 py-2.5 flex items-start gap-2">
-          <svg className="w-4 h-4 text-amber-600 mt-0.5 flex-shrink-0" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+        <div className="flex-shrink-0 bg-accent-amber/10 px-5 py-3 flex items-start gap-2 shadow-soft">
+          <svg className="w-4 h-4 text-accent-amber mt-0.5 flex-shrink-0" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
             <path d="M12 9v4M12 17h.01M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z" />
           </svg>
           <div className="flex-1 min-w-0">
-            <p className="text-xs text-amber-800 leading-relaxed">{props.detailWarning}</p>
+            <p className="text-xs text-ink leading-relaxed">{props.detailWarning}</p>
             {props.recommendedBoardSize && (
               <button
                 onClick={() => {
@@ -175,7 +175,7 @@ export default function DesktopLayout(props: DesktopLayoutProps) {
                   if (boardId) props.onBoardSizeChange(boardId)
                   props.setDetailWarning(null)
                 }}
-                className="mt-1.5 px-3 py-1 text-xs font-medium text-white bg-amber-600 hover:bg-amber-700 rounded-md transition-colors"
+                className="mt-1.5 px-3 py-1 text-xs font-medium text-white bg-accent-amber hover:bg-accent-amber/80 rounded-xl transition-colors"
               >
                 切换到 {props.recommendedBoardSize}
               </button>
@@ -183,7 +183,7 @@ export default function DesktopLayout(props: DesktopLayoutProps) {
           </div>
           <button
             onClick={() => props.setDetailWarning(null)}
-            className="text-amber-400 hover:text-amber-600 flex-shrink-0"
+            className="text-ink-lightest hover:text-accent-amber flex-shrink-0"
           >
             <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
               <path d="M18 6L6 18M6 6l12 12" />
@@ -195,11 +195,11 @@ export default function DesktopLayout(props: DesktopLayoutProps) {
       {/* 工作区：左侧设置面板 + 中央画板 + 右侧精修面板 */}
       <div className="flex-1 flex overflow-hidden min-h-0">
         {/* 左侧设置面板 — 所有设置直接可见 */}
-        <aside className="w-80 border-r border-paper-darker bg-paper-light overflow-y-auto flex-shrink-0">
+        <aside className="w-80 bg-paper-light overflow-y-auto flex-shrink-0 shadow-soft">
           <div className="p-4 space-y-5">
             {/* 图片上传 */}
             <section>
-              <h3 className="text-xs font-semibold text-ink-lighter uppercase tracking-wide mb-2">图片</h3>
+              <h3 className="text-xs font-medium text-ink-lighter mb-3">图片</h3>
               <ImageUploader
                 onUpload={props.onImageUpload}
                 imagePreview={props.imagePreview}
@@ -246,8 +246,8 @@ export default function DesktopLayout(props: DesktopLayoutProps) {
 
             {/* 颜色统计 — 有结果时显示 */}
             {props.result && (
-              <section className="pt-3 border-t border-paper-darker">
-                <h3 className="text-xs font-semibold text-ink-lighter uppercase tracking-wide mb-2">颜色统计</h3>
+              <section className="pt-4">
+                <h3 className="text-xs font-medium text-ink-lighter mb-3">颜色统计</h3>
                 <div className="space-y-2">
                   <div className="flex items-center gap-2 text-xs">
                     <span className="font-semibold text-ink">{props.result.totalBeads.toLocaleString()}</span>
@@ -257,8 +257,8 @@ export default function DesktopLayout(props: DesktopLayoutProps) {
                   </div>
                   <div className="space-y-0.5 max-h-[200px] overflow-y-auto">
                     {props.result.stats.map(stat => (
-                      <div key={stat.code} className="flex items-center gap-2 px-1 py-0.5 rounded hover:bg-paper-darker/50">
-                        <div className="w-3.5 h-3.5 rounded border border-paper-darker flex-shrink-0" style={{ backgroundColor: stat.hex }} />
+                      <div key={stat.code} className="flex items-center gap-2 px-2 py-1 rounded-lg hover:bg-paper-dark/60 transition-colors">
+                        <div className="w-3.5 h-3.5 rounded flex-shrink-0" style={{ backgroundColor: stat.hex }} />
                         <span className="text-[11px] font-mono font-medium text-ink w-10 flex-shrink-0">{stat.code}</span>
                         <span className="text-[10px] text-ink-lighter flex-1 truncate">{stat.name}</span>
                         <span className="text-[11px] font-semibold text-ink w-8 text-right">{stat.count}</span>
@@ -271,14 +271,14 @@ export default function DesktopLayout(props: DesktopLayoutProps) {
                 {/* 缺色替换 */}
                 {props.replacements.length > 0 && (
                   <div className="mt-3 space-y-1.5">
-                    <p className="text-[10px] font-medium text-orange-600">缺色替换建议 ({props.replacements.length})</p>
+                    <p className="text-[10px] font-medium text-accent-amber">缺色替换建议 ({props.replacements.length})</p>
                     <div className="space-y-0.5">
                       {props.replacements.map((r, i) => (
-                        <div key={i} className="flex items-center gap-1.5 px-1 py-0.5 rounded bg-paper-darker/50">
-                          <div className="w-3 h-3 rounded-full border border-paper-darker flex-shrink-0" style={{ backgroundColor: r.originalHex }} />
+                        <div key={i} className="flex items-center gap-1.5 px-2 py-1 rounded-lg hover:bg-paper-dark/60 transition-colors">
+                          <div className="w-3 h-3 rounded-full flex-shrink-0" style={{ backgroundColor: r.originalHex }} />
                           <span className="text-[10px] font-mono text-ink-light line-through">{r.originalCode}</span>
                           <span className="text-[10px] text-ink-lightest">→</span>
-                          <div className="w-3 h-3 rounded-full border border-paper-darker flex-shrink-0" style={{ backgroundColor: r.recommendedHex }} />
+                          <div className="w-3 h-3 rounded-full flex-shrink-0" style={{ backgroundColor: r.recommendedHex }} />
                           <span className="text-[10px] font-mono text-ink font-medium">{r.recommendedCode}</span>
                           <span className="text-[9px] text-ink-lightest ml-auto">ΔE {r.deltaE.toFixed(1)}</span>
                         </div>
@@ -349,9 +349,9 @@ export default function DesktopLayout(props: DesktopLayoutProps) {
 
         {/* 右侧精修面板 — 有结果时显示 */}
         {hasResult && (
-          <aside className="w-72 border-l border-paper-darker bg-paper-light overflow-y-auto flex-shrink-0">
+          <aside className="w-72 bg-paper-light overflow-y-auto flex-shrink-0 shadow-soft">
             <div className="p-4">
-              <h3 className="text-xs font-semibold text-ink-lighter uppercase tracking-wide mb-3">精修</h3>
+              <h3 className="text-xs font-medium text-ink-lighter mb-3">精修</h3>
               <RefinePanel
                 stats={props.result?.stats || []}
                 colors={props.colors}

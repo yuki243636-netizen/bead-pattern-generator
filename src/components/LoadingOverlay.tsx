@@ -15,10 +15,10 @@ export default function LoadingOverlay({ step }: LoadingOverlayProps) {
 
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/20 backdrop-blur-sm">
-      <div className="bg-paper-light rounded-2xl shadow-xl px-8 py-6 min-w-[280px]">
+      <div className="bg-paper-light rounded-2xl shadow-card px-8 py-6 min-w-[280px]">
         <div className="flex flex-col items-center gap-4">
           {/* Spinner */}
-          <div className="w-8 h-8 border-2 border-paper-darker border-t-ink rounded-full animate-spin" />
+          <div className="w-8 h-8 border-2 border-paper-dark border-t-accent-teal rounded-full animate-spin" />
 
           <p className="text-sm font-medium text-ink">生成图纸中…</p>
 
@@ -31,13 +31,13 @@ export default function LoadingOverlay({ step }: LoadingOverlayProps) {
                 <div key={s.key} className="flex items-center gap-2.5">
                   <div className="w-4 h-4 flex items-center justify-center">
                     {isDone ? (
-                      <svg className="text-green-500" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="3">
+                      <svg className="text-accent-teal" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="3">
                         <path d="M20 6L9 17l-5-5" />
                       </svg>
                     ) : isActive ? (
-                      <div className="w-2.5 h-2.5 rounded-full bg-ink animate-pulse-soft" />
+                      <div className="w-2.5 h-2.5 rounded-full bg-accent-teal animate-pulse-soft" />
                     ) : (
-                      <div className="w-2.5 h-2.5 rounded-full border border-ink-lightest" />
+                      <div className="w-2.5 h-2.5 rounded-full border border-paper-dark" />
                     )}
                   </div>
                   <span className={`text-xs ${isDone || isActive ? 'text-ink' : 'text-ink-lightest'}`}>

@@ -29,10 +29,10 @@ export default function BoardPanel({
             <button
               key={board.id}
               onClick={() => onBoardSizeChange(board.id)}
-              className={`px-2.5 py-2.5 rounded-lg transition-all text-left ${
+              className={`px-2.5 py-2.5 rounded-xl transition-all text-left ${
                 boardSizeId === board.id
-                  ? 'bg-ink text-white'
-                  : 'bg-paper-darker text-ink-lighter hover:bg-paper-dark'
+                  ? 'bg-accent-teal text-white'
+                  : 'bg-paper text-ink-lighter hover:bg-paper-dark shadow-soft'
               }`}
             >
               <div className="flex items-center justify-between">
@@ -49,7 +49,7 @@ export default function BoardPanel({
         </div>
 
         {/* 当前尺寸信息 */}
-        <div className="flex items-center gap-2 px-2 py-1.5 bg-paper-darker/50 rounded-md">
+        <div className="flex items-center gap-2 px-2 py-1.5 bg-paper rounded-xl shadow-soft">
           <span className="text-[10px] text-ink-lighter">实际图纸:</span>
           <span className="text-xs font-semibold text-ink">{canvasWidth}×{canvasHeight}</span>
           <span className="text-[10px] text-ink-lightest">格</span>
@@ -71,10 +71,10 @@ export default function BoardPanel({
             <button
               key={opt.value}
               onClick={() => onBeadSizeChange(opt.value)}
-              className={`flex-1 py-1.5 text-xs font-medium rounded-lg transition-colors ${
+              className={`flex-1 py-1.5 text-xs font-medium rounded-full transition-colors ${
                 beadSize === opt.value
-                  ? 'bg-ink text-white'
-                  : 'bg-paper-darker text-ink-lighter hover:bg-paper-dark'
+                  ? 'bg-accent-teal text-white'
+                  : 'bg-paper text-ink-lighter hover:bg-paper-dark shadow-soft'
               }`}
             >
               {opt.label}

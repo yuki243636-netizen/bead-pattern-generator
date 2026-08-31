@@ -18,12 +18,12 @@ export default function CanvasEmptyState({
           <img
             src={imagePreview}
             alt="原图预览"
-            className="w-full max-w-[240px] mx-auto rounded-xl border border-paper-darker shadow-soft"
+            className="w-full max-w-[240px] mx-auto rounded-xl shadow-soft"
           />
           {canGenerate && (
             <button
               onClick={onGenerate}
-              className="px-6 py-3 bg-ink text-white rounded-xl font-medium shadow-soft hover:bg-ink-light transition-colors"
+              className="px-6 py-3 bg-accent-teal text-white rounded-xl font-medium shadow-soft hover:bg-accent-tealDark transition-colors"
             >
               生成图纸
             </button>
@@ -50,7 +50,7 @@ export default function CanvasEmptyState({
         </div>
         <button
           onClick={onUploadClick}
-          className="px-6 py-3 bg-ink text-white rounded-xl font-medium shadow-soft hover:bg-ink-light transition-colors"
+          className="px-6 py-3 bg-accent-teal text-white rounded-xl font-medium shadow-soft hover:bg-accent-tealDark transition-colors"
         >
           ＋ 上传图片
         </button>

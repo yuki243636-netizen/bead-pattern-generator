@@ -58,8 +58,8 @@ export default function RefinePanel(props: RefinePanelProps) {
           <button
             onClick={onUndo}
             disabled={!canUndo}
-            className={`w-7 h-7 rounded-lg flex items-center justify-center transition-colors ${
-              canUndo ? 'text-ink-lighter hover:bg-paper-darker' : 'text-ink-lightest cursor-not-allowed'
+            className={`w-7 h-7 rounded-full flex items-center justify-center transition-colors ${
+              canUndo ? 'text-ink-lighter hover:bg-paper-dark' : 'text-ink-lightest cursor-not-allowed'
             }`}
             title="撤销"
           >
@@ -70,8 +70,8 @@ export default function RefinePanel(props: RefinePanelProps) {
           <button
             onClick={onRedo}
             disabled={!canRedo}
-            className={`w-7 h-7 rounded-lg flex items-center justify-center transition-colors ${
-              canRedo ? 'text-ink-lighter hover:bg-paper-darker' : 'text-ink-lightest cursor-not-allowed'
+            className={`w-7 h-7 rounded-full flex items-center justify-center transition-colors ${
+              canRedo ? 'text-ink-lighter hover:bg-paper-dark' : 'text-ink-lightest cursor-not-allowed'
             }`}
             title="重做"
           >
@@ -86,27 +86,27 @@ export default function RefinePanel(props: RefinePanelProps) {
       <div className="grid grid-cols-3 gap-1.5">
         <button
           onClick={() => onRefineModeChange(refineMode === 'colorReplace' ? 'none' : 'colorReplace')}
-          className={`py-2 text-[11px] font-medium rounded-lg transition-colors ${
+          className={`py-2 text-[11px] font-medium rounded-xl transition-colors ${
             refineMode === 'colorReplace'
-              ? 'bg-ink text-white'
-              : 'bg-paper-darker text-ink-lighter hover:bg-paper-dark'
+              ? 'bg-accent-teal text-white shadow-soft'
+              : 'bg-paper-light text-ink-lighter hover:bg-paper-dark shadow-soft'
           }`}
         >
           颜色替换
         </button>
         <button
           onClick={() => onRefineModeChange(refineMode === 'pixelEdit' ? 'none' : 'pixelEdit')}
-          className={`py-2 text-[11px] font-medium rounded-lg transition-colors ${
+          className={`py-2 text-[11px] font-medium rounded-xl transition-colors ${
             refineMode === 'pixelEdit'
-              ? 'bg-ink text-white'
-              : 'bg-paper-darker text-ink-lighter hover:bg-paper-dark'
+              ? 'bg-accent-teal text-white shadow-soft'
+              : 'bg-paper-light text-ink-lighter hover:bg-paper-dark shadow-soft'
           }`}
         >
           像素编辑
         </button>
         <button
           onClick={onResetView}
-          className="py-2 text-[11px] font-medium rounded-lg bg-paper-darker text-ink-lighter hover:bg-paper-dark transition-colors"
+          className="py-2 text-[11px] font-medium rounded-xl bg-paper-light text-ink-lighter hover:bg-paper-dark shadow-soft transition-colors"
         >
           视图复位
         </button>
@@ -121,10 +121,10 @@ export default function RefinePanel(props: RefinePanelProps) {
         <button
           onClick={onUndo}
           disabled={!canUndo}
-          className={`flex-1 py-1.5 text-[10px] font-medium rounded-lg transition-colors border ${
+          className={`flex-1 py-1.5 text-[10px] font-medium rounded-xl transition-colors ${
             canUndo
-              ? 'text-ink-lighter bg-paper-darker/50 hover:bg-paper-darker border-paper-darker'
-              : 'text-ink-lightest bg-paper-darker/30 border-paper-darker cursor-not-allowed'
+              ? 'text-ink-lighter bg-paper-light hover:bg-paper-dark shadow-soft'
+              : 'text-ink-lightest bg-paper-light/50 shadow-soft cursor-not-allowed'
           }`}
         >
           返回上一步
@@ -132,7 +132,7 @@ export default function RefinePanel(props: RefinePanelProps) {
         {canRestoreOriginal && (
           <button
             onClick={onRestoreOriginal}
-            className="flex-1 py-1.5 text-[10px] font-medium text-ink-lighter bg-paper-darker/50 hover:bg-paper-darker rounded-lg transition-colors border border-paper-darker"
+            className="flex-1 py-1.5 text-[10px] font-medium text-ink-lighter bg-paper-light hover:bg-paper-dark rounded-xl shadow-soft transition-colors"
           >
             恢复原始图纸
           </button>
@@ -215,7 +215,7 @@ function ColorReplaceTool(props: RefinePanelProps) {
   }
 
   return (
-    <div className="space-y-2 mt-2 p-2.5 bg-paper-darker/30 rounded-lg">
+    <div className="space-y-2 mt-2 p-3 bg-paper-light rounded-2xl shadow-soft">
       <p className="text-[10px] text-ink-lightest">点击颜色高亮图纸中的位置，再选择替换色</p>
 
       {/* 当前使用颜色列表 */}
@@ -224,13 +224,13 @@ function ColorReplaceTool(props: RefinePanelProps) {
           <button
             key={stat.code}
             onClick={() => handleSelectColor(stat.code)}
-            className={`w-full flex items-center gap-2 px-1.5 py-1 rounded-md transition-colors ${
-              highlightCode === stat.code ? 'bg-red-50 ring-1 ring-red-400' : 'hover:bg-paper-darker/50'
+            className={`w-full flex items-center gap-2 px-2 py-1 rounded-lg transition-colors ${
+              highlightCode === stat.code ? 'bg-accent-teal/10 ring-1 ring-accent-teal' : 'hover:bg-paper-dark/60'
             }`}
           >
             <div
-              className={`w-4 h-4 rounded border flex-shrink-0 ${
-                highlightCode === stat.code ? 'border-red-400' : 'border-paper-darker'
+              className={`w-4 h-4 rounded flex-shrink-0 ${
+                highlightCode === stat.code ? 'ring-2 ring-accent-teal' : ''
               }`}
               style={{ backgroundColor: stat.hex }}
             />
@@ -243,12 +243,12 @@ function ColorReplaceTool(props: RefinePanelProps) {
 
       {/* 选中颜色后的替换区域 */}
       {selectedStat && (
-        <div className="space-y-2 pt-2 border-t border-paper-darker">
+        <div className="space-y-2 pt-2">
           {/* 当前选中色信息 */}
           <div className="flex items-center gap-2">
             <span className="text-[10px] text-ink-lighter">当前:</span>
             <div
-              className="w-4 h-4 rounded border-2 border-red-400"
+              className="w-4 h-4 rounded ring-2 ring-accent-teal"
               style={{ backgroundColor: selectedStat.hex }}
             />
             <span className="text-[11px] font-mono text-ink">{selectedStat.code}</span>
@@ -264,9 +264,9 @@ function ColorReplaceTool(props: RefinePanelProps) {
                   <button
                     key={rec.code}
                     onClick={() => handlePickReplacement(rec.code)}
-                    className="flex flex-col items-center gap-0.5 p-1 rounded-md hover:bg-paper-darker/50 transition-colors flex-shrink-0"
+                    className="flex flex-col items-center gap-0.5 p-1 rounded-lg hover:bg-paper-dark/60 transition-colors flex-shrink-0"
                   >
-                    <div className="w-7 h-7 rounded border border-paper-darker" style={{ backgroundColor: rec.hex }} />
+                    <div className="w-7 h-7 rounded shadow-soft" style={{ backgroundColor: rec.hex }} />
                     <span className="text-[9px] font-mono text-ink-light">{rec.code}</span>
                     <span className="text-[8px] text-ink-lightest">ΔE{rec.deltaE.toFixed(1)}</span>
                   </button>
@@ -278,7 +278,7 @@ function ColorReplaceTool(props: RefinePanelProps) {
           {/* 展开/收起画板现有颜色 */}
           <button
             onClick={() => setShowAllPalette(!showAllPalette)}
-            className="w-full flex items-center justify-between py-1 px-1.5 text-[10px] font-medium text-ink-lighter hover:bg-paper-darker/30 rounded-md transition-colors"
+            className="w-full flex items-center justify-between py-1 px-2 text-[10px] font-medium text-ink-lighter hover:bg-paper-dark/60 rounded-lg transition-colors"
           >
             <span>{showAllPalette ? '收起画板颜色' : `画板其他颜色 (${boardColors.length}色)`}</span>
             <svg
@@ -296,10 +296,10 @@ function ColorReplaceTool(props: RefinePanelProps) {
                 <button
                   key={c.code}
                   onClick={() => handlePickReplacement(c.code)}
-                  className="flex flex-col items-center gap-0.5 p-1 rounded-md hover:bg-paper-darker/50 transition-colors"
+                  className="flex flex-col items-center gap-0.5 p-1 rounded-lg hover:bg-paper-dark/60 transition-colors"
                 >
                   <div
-                    className="w-7 h-7 rounded border border-paper-darker"
+                    className="w-7 h-7 rounded shadow-soft"
                     style={{ backgroundColor: c.hex }}
                   />
                   <span className="text-[9px] font-mono text-ink-light">{c.code}</span>
@@ -312,22 +312,22 @@ function ColorReplaceTool(props: RefinePanelProps) {
 
       {/* 替换确认 */}
       {confirmReplace && (
-        <div className="p-2 bg-amber-50 border border-amber-200 rounded-md space-y-1.5">
-          <p className="text-[11px] text-amber-800">
+        <div className="p-3 bg-accent-amber/10 rounded-2xl shadow-soft space-y-1.5">
+          <p className="text-[11px] text-ink">
             将 <span className="font-mono font-bold">{confirmReplace.oldCode}</span> 替换为{' '}
             <span className="font-mono font-bold">{confirmReplace.newCode}</span>？
           </p>
-          <p className="text-[10px] text-amber-600">影响拼豆数量: {confirmReplace.count}</p>
+          <p className="text-[10px] text-accent-amber">影响拼豆数量: {confirmReplace.count}</p>
           <div className="flex gap-1.5">
             <button
               onClick={handleConfirmReplace}
-              className="flex-1 py-1 text-[11px] font-medium text-white bg-amber-600 hover:bg-amber-700 rounded-md transition-colors"
+              className="flex-1 py-1 text-[11px] font-medium text-white bg-accent-teal hover:bg-accent-tealDark rounded-xl transition-colors"
             >
               确认替换
             </button>
             <button
               onClick={() => setConfirmReplace(null)}
-              className="px-3 py-1 text-[11px] font-medium text-ink-lighter bg-paper-light border border-paper-darker rounded-md hover:bg-paper-darker/50 transition-colors"
+              className="px-3 py-1 text-[11px] font-medium text-ink-lighter bg-paper-light rounded-xl hover:bg-paper-dark/60 shadow-soft transition-colors"
             >
               取消
             </button>
@@ -381,7 +381,7 @@ function PixelEditTool(props: RefinePanelProps) {
   }
 
   return (
-    <div className="space-y-2 mt-2 p-2.5 bg-paper-darker/30 rounded-lg">
+    <div className="space-y-2 mt-2 p-3 bg-paper-light rounded-2xl shadow-soft">
       <p className="text-[10px] text-ink-lightest">
         {brushColor
           ? '已选画笔颜色，点击/拖动画板直接替换'
@@ -390,14 +390,14 @@ function PixelEditTool(props: RefinePanelProps) {
 
       {/* 选中状态 + 操作按钮 */}
       {selectedCount > 0 && (
-        <div className="p-1.5 bg-red-50 border border-red-200 rounded-md space-y-1.5">
+        <div className="p-2 bg-red-50 rounded-2xl shadow-soft space-y-1.5">
           <div className="flex items-center justify-between">
-            <span className="text-[11px] text-red-700 font-medium">
+            <span className="text-[11px] text-ink font-medium">
               已选中 {selectedCount} 格
             </span>
             <button
               onClick={onClearSelection}
-              className="text-[10px] text-red-500 hover:text-red-700"
+              className="text-[10px] text-accent-teal hover:text-accent-tealDark"
             >
               清除选中
             </button>
@@ -405,13 +405,13 @@ function PixelEditTool(props: RefinePanelProps) {
           {brushColor && (
             <button
               onClick={handleBatchReplace}
-              className="w-full py-1.5 text-[11px] font-medium text-white bg-red-600 hover:bg-red-700 rounded-md transition-colors"
+              className="w-full py-1.5 text-[11px] font-medium text-white bg-accent-teal hover:bg-accent-tealDark rounded-xl transition-colors"
             >
               替换选中为 {brushColor}
             </button>
           )}
           {!brushColor && (
-            <p className="text-[10px] text-red-400">请先选择替换颜色</p>
+            <p className="text-[10px] text-ink-lightest">请先选择替换颜色</p>
           )}
         </div>
       )}
@@ -422,23 +422,23 @@ function PixelEditTool(props: RefinePanelProps) {
         value={searchCode}
         onChange={e => setSearchCode(e.target.value)}
         placeholder="搜索色号..."
-        className="w-full px-2 py-1 text-[11px] border border-paper-darker rounded-md bg-paper-light focus:border-ink focus:outline-none"
+        className="w-full px-2.5 py-1.5 text-[11px] rounded-xl bg-paper-light shadow-soft focus:ring-2 focus:ring-accent-teal focus:outline-none"
       />
 
       {/* 切换：仅已使用 / 全部色卡 */}
       <div className="flex gap-1">
         <button
           onClick={() => setShowAllColors(false)}
-          className={`flex-1 py-1 text-[10px] font-medium rounded-md transition-colors ${
-            !showAllColors ? 'bg-ink text-white' : 'bg-paper-darker text-ink-lighter'
+          className={`flex-1 py-1 text-[10px] font-medium rounded-xl transition-colors ${
+            !showAllColors ? 'bg-accent-teal text-white shadow-soft' : 'bg-paper-light text-ink-lighter hover:bg-paper-dark shadow-soft'
           }`}
         >
           已使用 ({stats.length})
         </button>
         <button
           onClick={() => setShowAllColors(true)}
-          className={`flex-1 py-1 text-[10px] font-medium rounded-md transition-colors ${
-            showAllColors ? 'bg-ink text-white' : 'bg-paper-darker text-ink-lighter'
+          className={`flex-1 py-1 text-[10px] font-medium rounded-xl transition-colors ${
+            showAllColors ? 'bg-accent-teal text-white shadow-soft' : 'bg-paper-light text-ink-lighter hover:bg-paper-dark shadow-soft'
           }`}
         >
           全部 ({colors.length})
@@ -451,15 +451,15 @@ function PixelEditTool(props: RefinePanelProps) {
           <button
             key={c.code}
             onClick={() => onBrushColorChange(c.code)}
-            className={`flex flex-col items-center gap-0.5 p-1 rounded-md transition-all ${
+            className={`flex flex-col items-center gap-0.5 p-1 rounded-lg transition-all ${
               brushColor === c.code
-                ? 'ring-2 ring-ink bg-paper-light'
-                : 'hover:bg-paper-darker/50'
+                ? 'ring-2 ring-accent-teal bg-paper-light'
+                : 'hover:bg-paper-dark/60'
             }`}
           >
             <div
-              className={`w-7 h-7 rounded border ${
-                brushColor === c.code ? 'border-ink' : 'border-paper-darker'
+              className={`w-7 h-7 rounded ${
+                brushColor === c.code ? 'ring-2 ring-accent-teal' : 'shadow-soft'
               }`}
               style={{ backgroundColor: c.hex }}
             />
@@ -470,16 +470,16 @@ function PixelEditTool(props: RefinePanelProps) {
 
       {/* 当前画笔色显示 */}
       {brushColor && (
-        <div className="flex items-center gap-2 p-1.5 bg-paper-light border border-paper-darker rounded-md">
+        <div className="flex items-center gap-2 p-2 bg-paper-light rounded-xl shadow-soft">
           <div
-            className="w-5 h-5 rounded border border-paper-darker"
+            className="w-5 h-5 rounded"
             style={{ backgroundColor: colorMap.get(brushColor)?.hex }}
           />
           <span className="text-[11px] font-mono text-ink">{brushColor}</span>
           <span className="text-[10px] text-ink-lighter truncate">{colorMap.get(brushColor)?.name}</span>
           <button
             onClick={() => onBrushColorChange(null)}
-            className="ml-auto text-[10px] text-ink-lightest hover:text-ink-lighter"
+            className="ml-auto text-[10px] text-ink-lightest hover:text-accent-teal"
           >
             清除
           </button>

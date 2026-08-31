@@ -194,25 +194,25 @@ export default function MobileLayout(props: MobileLayoutProps) {
   return (
     <div className="h-[100dvh] bg-paper flex flex-col overflow-hidden">
       {/* ===== 顶部导航栏 ===== */}
-      <header className="flex items-center justify-between px-3 py-2 border-b border-paper-darker bg-paper-light flex-shrink-0 safe-area-top">
-        <div className="flex items-center gap-2">
-          <img src="/icon-192.png" alt="logo" className="w-7 h-7 rounded-lg flex-shrink-0 object-cover" />
-          <h1 className="text-sm font-semibold text-ink">甘薯么拼豆</h1>
+      <header className="flex items-center justify-between px-4 py-3 bg-paper-light flex-shrink-0 safe-area-top shadow-soft">
+        <div className="flex items-center gap-2.5">
+          <img src="/icon-192.png" alt="logo" className="w-8 h-8 rounded-xl flex-shrink-0 object-cover shadow-soft" />
+          <h1 className="text-base font-semibold text-ink">甘薯么拼豆</h1>
         </div>
 
         <div className="flex items-center gap-2">
           {displayResult && (
-            <div className="flex items-baseline gap-1">
+            <div className="flex items-baseline gap-1 px-3 py-1.5 bg-paper rounded-full">
               <span className="text-sm font-bold text-ink">{displayResult.totalBeads.toLocaleString()}</span>
-              <span className="text-[9px] text-ink-lighter">颗</span>
-              <span className="text-sm font-bold text-ink ml-1">{displayResult.stats.length}</span>
-              <span className="text-[9px] text-ink-lighter">色</span>
+              <span className="text-[10px] text-ink-lighter">颗</span>
+              <span className="text-sm font-bold text-ink ml-1.5">{displayResult.stats.length}</span>
+              <span className="text-[10px] text-ink-lighter">色</span>
             </div>
           )}
         </div>
       </header>
 
-      {/* ===== 画板区域（占 55-65% 高度）===== */}
+      {/* ===== 画板区域 ===== */}
       <div className="flex-1 min-h-0 relative bg-paper flex flex-col">
         <PatternCanvas
           result={displayResult}
@@ -259,25 +259,25 @@ export default function MobileLayout(props: MobileLayoutProps) {
           isMobile
         />
 
-        {/* 移动端浮动坐标/图例切换 — 左上角小按钮 */}
+        {/* 移动端浮动坐标/图例切换 */}
         {displayResult && (
-          <div className="absolute top-2 left-2 flex gap-1 z-10">
+          <div className="absolute top-3 left-3 flex gap-1.5 z-10">
             <button
               onClick={() => onShowCoordinatesChange(!showCoordinates)}
-              className={`px-2.5 h-7 rounded-lg text-[10px] font-medium border backdrop-blur-sm transition-colors ${
+              className={`px-3 h-8 rounded-full text-[11px] font-medium backdrop-blur-md transition-all shadow-soft ${
                 showCoordinates
-                  ? 'bg-ink text-white border-ink'
-                  : 'bg-paper-light/90 text-ink-lighter border-paper-darker'
+                  ? 'bg-accent-teal text-white'
+                  : 'bg-paper-light/90 text-ink-lighter'
               }`}
             >
               坐标
             </button>
             <button
               onClick={() => onShowLegendChange(!showLegend)}
-              className={`px-2.5 h-7 rounded-lg text-[10px] font-medium border backdrop-blur-sm transition-colors ${
+              className={`px-3 h-8 rounded-full text-[11px] font-medium backdrop-blur-md transition-all shadow-soft ${
                 showLegend
-                  ? 'bg-ink text-white border-ink'
-                  : 'bg-paper-light/90 text-ink-lighter border-paper-darker'
+                  ? 'bg-accent-teal text-white'
+                  : 'bg-paper-light/90 text-ink-lighter'
               }`}
             >
               图例
@@ -285,9 +285,9 @@ export default function MobileLayout(props: MobileLayoutProps) {
             {canUndo && (
               <button
                 onClick={onUndo}
-                className="w-7 h-7 rounded-lg bg-paper-light/90 backdrop-blur-sm border border-paper-darker flex items-center justify-center text-ink-lighter active:scale-90 transition-transform"
+                className="w-8 h-8 rounded-full bg-paper-light/90 backdrop-blur-md shadow-soft flex items-center justify-center text-ink-lighter active:scale-90 transition-transform"
               >
-                <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5">
+                <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5">
                   <path d="M3 7v6h6M3 13a9 9 0 1 0 3-7.7L3 8" />
                 </svg>
               </button>
@@ -295,22 +295,22 @@ export default function MobileLayout(props: MobileLayoutProps) {
           </div>
         )}
 
-        {/* 空状态遮罩 — 没有图片时显示 */}
+        {/* 空状态遮罩 */}
         {!imagePreview && !displayResult && (
           <div className="absolute inset-0 flex flex-col items-center justify-center bg-paper/80 backdrop-blur-sm pointer-events-none">
-            <div className="w-16 h-16 rounded-2xl bg-ink/5 flex items-center justify-center mb-4">
-              <svg className="text-ink-lighter" width="36" height="36" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5">
-                <rect x="3" y="3" width="7" height="7" rx="1" />
-                <rect x="14" y="3" width="7" height="7" rx="1" />
-                <rect x="3" y="14" width="7" height="7" rx="1" />
-                <rect x="14" y="14" width="7" height="7" rx="1" />
+            <div className="w-20 h-20 rounded-3xl bg-paper-light shadow-card flex items-center justify-center mb-5">
+              <svg className="text-accent-teal" width="40" height="40" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5">
+                <rect x="3" y="3" width="7" height="7" rx="2" />
+                <rect x="14" y="3" width="7" height="7" rx="2" />
+                <rect x="3" y="14" width="7" height="7" rx="2" />
+                <rect x="14" y="14" width="7" height="7" rx="2" />
               </svg>
             </div>
-            <p className="text-base font-semibold text-ink mb-1">开始制作</p>
-            <p className="text-xs text-ink-lighter mb-4">上传一张图片生成拼豆图纸</p>
+            <p className="text-lg font-semibold text-ink mb-1">开始制作</p>
+            <p className="text-sm text-ink-lighter mb-5">上传一张图片生成拼豆图纸</p>
             <button
               onClick={() => setActiveTab('upload')}
-              className="pointer-events-auto px-6 py-2.5 text-sm font-medium text-white bg-ink rounded-xl shadow-soft active:scale-95 transition-transform"
+              className="pointer-events-auto px-8 py-3 text-sm font-medium text-white bg-accent-teal rounded-full shadow-card active:scale-95 transition-transform"
             >
               ＋ 上传图片
             </button>
@@ -318,32 +318,32 @@ export default function MobileLayout(props: MobileLayoutProps) {
         )}
       </div>
 
-      {/* ===== 底部操作区 ===== */}
-      <div className="flex-shrink-0 bg-paper-light border-t border-paper-darker safe-area-bottom">
+      {/* ===== 底部操作区 — 白色卡片带阴影 ===== */}
+      <div className="flex-shrink-0 bg-paper-light rounded-t-3xl shadow-elevated safe-area-bottom">
         {/* 板型 — 始终展示 */}
-        <div className="px-3 py-1.5 border-b border-paper-darker">
-          <div className="flex items-center gap-2">
-            <span className="text-[10px] font-medium text-ink-lighter flex-shrink-0 w-6">板型</span>
-            <div className="flex gap-1.5 overflow-x-auto no-scrollbar flex-1">
+        <div className="px-4 pt-3 pb-2">
+          <div className="flex items-center gap-2.5">
+            <span className="text-[11px] font-medium text-ink-lighter flex-shrink-0">板型</span>
+            <div className="flex gap-2 overflow-x-auto no-scrollbar flex-1">
               {BOARD_SIZES.map(board => (
                 <button
                   key={board.id}
                   onClick={() => onBoardSizeChange(board.id)}
-                  className={`flex-shrink-0 px-2.5 py-1 rounded-md transition-all text-center min-w-[56px] ${
+                  className={`flex-shrink-0 px-3 py-1.5 rounded-xl transition-all text-center min-w-[60px] ${
                     boardSizeId === board.id
-                      ? 'bg-ink text-white'
-                      : 'bg-paper-darker text-ink-lighter'
+                      ? 'bg-accent-teal text-white shadow-soft'
+                      : 'bg-paper text-ink-lighter'
                   }`}
                 >
-                  <div className="text-[11px] font-semibold leading-tight">{board.name}</div>
-                  <div className={`text-[8px] leading-tight ${boardSizeId === board.id ? 'text-white/70' : 'text-ink-lightest'}`}>
+                  <div className="text-[12px] font-semibold leading-tight">{board.name}</div>
+                  <div className={`text-[9px] leading-tight mt-0.5 ${boardSizeId === board.id ? 'text-white/70' : 'text-ink-lightest'}`}>
                     {board.width}×{board.height}
                   </div>
                 </button>
               ))}
             </div>
-            {/* 豆子大小 — 紧凑选择 */}
-            <div className="flex gap-0.5 flex-shrink-0">
+            {/* 豆子大小 */}
+            <div className="flex gap-1 flex-shrink-0">
               {([
                 { value: 'mini' as const, label: 'M' },
                 { value: 'standard' as const, label: 'S' },
@@ -352,8 +352,8 @@ export default function MobileLayout(props: MobileLayoutProps) {
                 <button
                   key={opt.value}
                   onClick={() => onBeadSizeChange(opt.value)}
-                  className={`w-6 h-6 text-[9px] font-bold rounded transition-colors ${
-                    beadSize === opt.value ? 'bg-ink text-white' : 'bg-paper-darker text-ink-lighter'
+                  className={`w-7 h-7 text-[10px] font-bold rounded-lg transition-all ${
+                    beadSize === opt.value ? 'bg-accent-teal text-white shadow-soft' : 'bg-paper text-ink-lighter'
                   }`}
                 >
                   {opt.label}
@@ -361,19 +361,19 @@ export default function MobileLayout(props: MobileLayoutProps) {
               ))}
             </div>
           </div>
-          <div className="flex items-center gap-2 mt-0.5">
-            <span className="text-[8px] text-ink-lightest">实际 {canvasWidth}×{canvasHeight} · ≈{(canvasWidth * 0.5).toFixed(0)}×{(canvasHeight * 0.5).toFixed(0)}cm</span>
+          <div className="flex items-center gap-2 mt-1">
+            <span className="text-[9px] text-ink-lightest">实际 {canvasWidth}×{canvasHeight} · ≈{(canvasWidth * 0.5).toFixed(0)}×{(canvasHeight * 0.5).toFixed(0)}cm</span>
           </div>
         </div>
 
         {/* 色卡 — 始终展示 */}
-        <div className="px-3 py-1.5 border-b border-paper-darker">
-          <div className="flex items-center gap-2">
-            <span className="text-[10px] font-medium text-ink-lighter flex-shrink-0 w-6">色卡</span>
+        <div className="px-4 py-2">
+          <div className="flex items-center gap-2.5">
+            <span className="text-[11px] font-medium text-ink-lighter flex-shrink-0">色卡</span>
             <select
               value={currentPaletteId}
               onChange={e => onPaletteChange(e.target.value)}
-              className="flex-1 px-2 py-1.5 text-xs border border-paper-darker rounded-md bg-paper-light focus:border-ink focus:outline-none min-h-[32px]"
+              className="flex-1 px-3 py-2 text-xs bg-paper rounded-xl focus:outline-none min-h-[36px] text-ink"
             >
               {palettes.map(p => (
                 <option key={p.id} value={p.id}>
@@ -383,31 +383,31 @@ export default function MobileLayout(props: MobileLayoutProps) {
             </select>
             <button
               onClick={() => onMatchModeChange(matchMode === 'standard' ? 'limited' : 'standard')}
-              className={`px-2.5 py-1.5 text-[10px] font-medium rounded-md transition-colors flex-shrink-0 min-h-[32px] ${
-                matchMode === 'limited' ? 'bg-ink text-white' : 'bg-paper-darker text-ink-lighter'
+              className={`px-3 py-2 text-[10px] font-medium rounded-xl transition-all flex-shrink-0 min-h-[36px] ${
+                matchMode === 'limited' ? 'bg-accent-teal text-white shadow-soft' : 'bg-paper text-ink-lighter'
               }`}
             >
               {matchMode === 'limited' ? `限${maxColors}色` : '标准'}
             </button>
             <button
               onClick={() => onDitherChange(!dither)}
-              className={`px-2 py-1.5 text-[9px] font-medium rounded-md transition-colors flex-shrink-0 min-h-[32px] ${
-                dither ? 'bg-ink text-white' : 'bg-paper-darker text-ink-lighter'
+              className={`px-2.5 py-2 text-[9px] font-medium rounded-xl transition-all flex-shrink-0 min-h-[36px] ${
+                dither ? 'bg-accent-teal text-white shadow-soft' : 'bg-paper text-ink-lighter'
               }`}
             >
               抖动
             </button>
             <button
               onClick={() => onDebugModeChange(!debugMode)}
-              className={`px-2 py-1.5 text-[9px] font-medium rounded-md transition-colors flex-shrink-0 min-h-[32px] ${
-                debugMode ? 'bg-ink text-white' : 'bg-paper-darker text-ink-lighter'
+              className={`px-2.5 py-2 text-[9px] font-medium rounded-xl transition-all flex-shrink-0 min-h-[36px] ${
+                debugMode ? 'bg-accent-teal text-white shadow-soft' : 'bg-paper text-ink-lighter'
               }`}
             >
               调试
             </button>
           </div>
           {matchMode === 'limited' && (
-            <div className="flex items-center gap-2 mt-1">
+            <div className="flex items-center gap-2 mt-1.5">
               <input
                 type="range"
                 min={2}
@@ -416,13 +416,13 @@ export default function MobileLayout(props: MobileLayoutProps) {
                 onChange={e => onMaxColorsChange(Number(e.target.value))}
                 className="flex-1 mobile-slider h-1"
               />
-              <span className="text-[10px] font-semibold text-ink w-6 text-right">{maxColors}</span>
+              <span className="text-[11px] font-semibold text-ink w-6 text-right">{maxColors}</span>
             </div>
           )}
         </div>
 
         {/* Tab: 图片 / 精修 */}
-        <div className="flex items-stretch border-b border-paper-darker">
+        <div className="flex items-stretch px-4 pt-1">
           <FlowTabButton
             label="图片"
             active={activeTab === 'upload'}
@@ -439,59 +439,57 @@ export default function MobileLayout(props: MobileLayoutProps) {
 
         {/* 展开面板区域 */}
         {activeTab && (
-          <div className="max-h-[22vh] overflow-y-auto border-b border-paper-darker animate-fade-in">
-            <div className="p-3">
-              {activeTab === 'upload' && (
-                <UploadPanel
-                  imagePreview={imagePreview}
-                  imageDimensions={imageDimensions}
-                  fileSize={fileSize}
-                  onImageUpload={onImageUpload}
-                  onImageRemove={onImageRemove}
-                  hasResult={!!displayResult}
-                />
-              )}
-              {activeTab === 'refine' && displayResult && (
-                <RefinePanel
-                  stats={displayResult.stats}
-                  colors={colors}
-                  colorMap={colorMap}
-                  currentPaletteId={currentPaletteId}
-                  refineMode={refineMode}
-                  onRefineModeChange={onRefineModeChange}
-                  highlightCode={highlightCode}
-                  onHighlightCodeChange={onHighlightCodeChange}
-                  onColorReplace={onColorReplace}
-                  onPixelEdit={onPixelEdit}
-                  onBatchPixelEdit={onBatchPixelEdit}
-                  selectedCells={selectedCells}
-                  onToggleCell={onToggleCell}
-                  onAddToSelection={onAddToSelection}
-                  onClearSelection={onClearSelection}
-                  brushColor={brushColor}
-                  onBrushColorChange={onBrushColorChange}
-                  onUndo={onRefineUndo}
-                  onRedo={onRefineRedo}
-                  canUndo={canUndo}
-                  canRedo={canRedo}
-                  onResetView={onResetView}
-                  onRestoreOriginal={onRestoreOriginal}
-                  canRestoreOriginal={canRestoreOriginal}
-                />
-              )}
-            </div>
+          <div className="max-h-[22vh] overflow-y-auto px-4 py-2 animate-fade-in">
+            {activeTab === 'upload' && (
+              <UploadPanel
+                imagePreview={imagePreview}
+                imageDimensions={imageDimensions}
+                fileSize={fileSize}
+                onImageUpload={onImageUpload}
+                onImageRemove={onImageRemove}
+                hasResult={!!displayResult}
+              />
+            )}
+            {activeTab === 'refine' && displayResult && (
+              <RefinePanel
+                stats={displayResult.stats}
+                colors={colors}
+                colorMap={colorMap}
+                currentPaletteId={currentPaletteId}
+                refineMode={refineMode}
+                onRefineModeChange={onRefineModeChange}
+                highlightCode={highlightCode}
+                onHighlightCodeChange={onHighlightCodeChange}
+                onColorReplace={onColorReplace}
+                onPixelEdit={onPixelEdit}
+                onBatchPixelEdit={onBatchPixelEdit}
+                selectedCells={selectedCells}
+                onToggleCell={onToggleCell}
+                onAddToSelection={onAddToSelection}
+                onClearSelection={onClearSelection}
+                brushColor={brushColor}
+                onBrushColorChange={onBrushColorChange}
+                onUndo={onRefineUndo}
+                onRedo={onRefineRedo}
+                canUndo={canUndo}
+                canRedo={canRedo}
+                onResetView={onResetView}
+                onRestoreOriginal={onRestoreOriginal}
+                canRestoreOriginal={canRestoreOriginal}
+              />
+            )}
           </div>
         )}
 
         {/* 底部核心操作按钮 */}
-        <div className="flex gap-2 px-3 py-2">
+        <div className="flex gap-3 px-4 py-3">
           <button
             onClick={handleGenerate}
             disabled={!canGenerate}
-            className={`flex-1 py-2.5 text-sm font-semibold rounded-xl transition-all min-h-[44px] ${
+            className={`flex-1 py-3 text-sm font-semibold rounded-2xl transition-all min-h-[44px] ${
               canGenerate
-                ? 'bg-paper-darker text-ink active:scale-[0.98]'
-                : 'bg-paper-darker text-ink-lightest'
+                ? 'bg-paper text-ink active:scale-[0.98] shadow-soft'
+                : 'bg-paper-dark text-ink-lightest'
             }`}
           >
             重新生成
@@ -509,10 +507,10 @@ export default function MobileLayout(props: MobileLayoutProps) {
               }
             }}
             disabled={!displayResult}
-            className={`flex-1 py-2.5 text-sm font-semibold rounded-xl transition-all min-h-[44px] ${
+            className={`flex-1 py-3 text-sm font-semibold rounded-2xl transition-all min-h-[44px] ${
               displayResult
-                ? 'bg-ink text-white active:scale-[0.98]'
-                : 'bg-paper-darker text-ink-lightest'
+                ? 'bg-accent-teal text-white active:scale-[0.98] shadow-card'
+                : 'bg-paper-dark text-ink-lightest'
             }`}
           >
             下载图纸
@@ -522,16 +520,16 @@ export default function MobileLayout(props: MobileLayoutProps) {
 
       {/* ===== 弹窗 ===== */}
       {loading && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/40 backdrop-blur-sm">
-          <div className="bg-paper-light rounded-2xl px-6 py-5 flex flex-col items-center gap-3">
-            <div className="w-8 h-8 border-2 border-ink border-t-transparent rounded-full animate-spin" />
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/30 backdrop-blur-sm">
+          <div className="bg-paper-light rounded-3xl px-8 py-6 flex flex-col items-center gap-3 shadow-elevated">
+            <div className="w-10 h-10 border-2 border-accent-teal border-t-transparent rounded-full animate-spin" />
             <p className="text-sm text-ink font-medium">{loadingStep || '处理中...'}</p>
           </div>
         </div>
       )}
 
       {error && (
-        <div className="fixed top-14 left-1/2 -translate-x-1/2 px-4 py-2 bg-red-500 text-white text-sm rounded-lg shadow-lg z-50 animate-fade-in max-w-[90vw]">
+        <div className="fixed top-20 left-1/2 -translate-x-1/2 px-5 py-3 bg-accent-amber text-white text-sm rounded-2xl shadow-elevated z-50 animate-fade-in max-w-[90vw]">
           {error}
           <button onClick={() => setError(null)} className="ml-2 opacity-70">×</button>
         </div>
@@ -541,7 +539,7 @@ export default function MobileLayout(props: MobileLayoutProps) {
 }
 
 // ============================================================
-// 底部 Tab 按钮 — 简洁文字标签
+// 底部 Tab 按钮 — 胶囊式，柔和选中状态
 // ============================================================
 function FlowTabButton({ label, active, onClick, disabled, highlight }: {
   label: string
@@ -555,21 +553,17 @@ function FlowTabButton({ label, active, onClick, disabled, highlight }: {
     <button
       onClick={onClick}
       disabled={disabled}
-      className={`flex-1 flex flex-col items-center justify-center py-1.5 transition-all min-h-[44px] relative ${
+      className={`flex-1 flex flex-col items-center justify-center py-2.5 transition-all min-h-[44px] relative ${
         disabled
           ? 'text-ink-lightest'
           : active
-            ? 'text-ink bg-ink/8 font-bold'
+            ? `text-white font-bold rounded-xl ${highlight ? 'bg-accent-pink' : 'bg-accent-teal'} shadow-soft`
             : highlight
-              ? 'text-amber-600 active:bg-paper-darker/50'
-              : 'text-ink-lighter active:bg-paper-darker/50'
+              ? 'text-accent-pink bg-paper active:scale-95 rounded-xl'
+              : 'text-ink-lighter bg-paper active:scale-95 rounded-xl'
       }`}
     >
-      <span className="text-[11px] font-medium">{label}</span>
-      {/* 底部高亮指示条 */}
-      {active && (
-        <div className={`absolute bottom-0 left-1/2 -translate-x-1/2 w-8 h-[3px] rounded-full ${highlight ? 'bg-amber-500' : 'bg-ink'}`} />
-      )}
+      <span className="text-[12px] font-medium">{label}</span>
     </button>
   )
 }
@@ -609,5 +603,3 @@ function UploadPanel({
     </div>
   )
 }
-
-

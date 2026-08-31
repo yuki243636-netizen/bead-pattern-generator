@@ -19,7 +19,7 @@ export default function DownloadPanel({ onDownload, onClose }: DownloadPanelProp
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/20 backdrop-blur-sm" onClick={onClose}>
       <div
-        className="bg-paper-light rounded-2xl shadow-xl w-[320px] max-w-[90vw] p-5 animate-fade-in"
+        className="bg-paper-light rounded-2xl shadow-elevated w-[320px] max-w-[90vw] p-5 animate-fade-in"
         onClick={e => e.stopPropagation()}
       >
         {/* 标题 */}
@@ -42,7 +42,7 @@ export default function DownloadPanel({ onDownload, onClose }: DownloadPanelProp
                   type="checkbox"
                   checked={includeGrid}
                   onChange={e => setIncludeGrid(e.target.checked)}
-                  className="w-4 h-4 rounded accent-ink"
+                  className="w-4 h-4 rounded accent-accent-teal"
                 />
                 <span className="text-sm text-ink-light">显示网格</span>
               </label>
@@ -51,7 +51,7 @@ export default function DownloadPanel({ onDownload, onClose }: DownloadPanelProp
                   type="checkbox"
                   checked={includeCoordinates}
                   onChange={e => setIncludeCoordinates(e.target.checked)}
-                  className="w-4 h-4 rounded accent-ink"
+                  className="w-4 h-4 rounded accent-accent-teal"
                 />
                 <span className="text-sm text-ink-light">显示坐标</span>
               </label>
@@ -60,7 +60,7 @@ export default function DownloadPanel({ onDownload, onClose }: DownloadPanelProp
                   type="checkbox"
                   checked={includeColorLegend}
                   onChange={e => setIncludeColorLegend(e.target.checked)}
-                  className="w-4 h-4 rounded accent-ink"
+                  className="w-4 h-4 rounded accent-accent-teal"
                 />
                 <span className="text-sm text-ink-light">颜色图例</span>
               </label>
@@ -69,7 +69,7 @@ export default function DownloadPanel({ onDownload, onClose }: DownloadPanelProp
                   type="checkbox"
                   checked={includeBeadCount}
                   onChange={e => setIncludeBeadCount(e.target.checked)}
-                  className="w-4 h-4 rounded accent-ink"
+                  className="w-4 h-4 rounded accent-accent-teal"
                 />
                 <span className="text-sm text-ink-light">豆子数量清单</span>
               </label>
@@ -79,7 +79,7 @@ export default function DownloadPanel({ onDownload, onClose }: DownloadPanelProp
           {/* 下载按钮 */}
           <button
             onClick={handleDownload}
-            className="w-full py-2.5 text-sm font-semibold text-white bg-ink rounded-xl hover:bg-ink-light transition-colors mt-2"
+            className="w-full py-2.5 text-sm font-semibold text-white bg-accent-teal rounded-xl hover:bg-accent-tealDark transition-colors mt-2"
           >
             下载 JPG
           </button>
