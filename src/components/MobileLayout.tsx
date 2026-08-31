@@ -191,7 +191,12 @@ export default function MobileLayout(props: MobileLayoutProps) {
       {/* ===== 顶部导航栏 ===== */}
       <header className="flex items-center justify-between px-4 py-3 bg-paper-light flex-shrink-0 safe-area-top shadow-soft">
         <div className="flex items-center gap-2.5">
-          <img src="/icon-192.png" alt="logo" className="w-8 h-8 rounded-xl flex-shrink-0 object-cover shadow-soft" />
+          <img
+            src="/icon-192.png?v=2"
+            alt="logo"
+            className="w-8 h-8 rounded-xl flex-shrink-0 shadow-soft"
+            style={{ imageRendering: 'pixelated', objectFit: 'contain' }}
+          />
           <h1 className="text-base font-semibold text-ink">甘薯么拼豆</h1>
         </div>
 

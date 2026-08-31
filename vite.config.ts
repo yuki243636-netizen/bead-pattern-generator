@@ -12,8 +12,8 @@ export default defineConfig({
         name: '甘薯么拼豆',
         short_name: '甘薯么拼豆',
         description: '将任意图片转换为拼豆图纸，自动匹配颜色、统计数量、推荐缺色替换。',
-        theme_color: '#1a1a1a',
-        background_color: '#fafafa',
+        theme_color: '#E091A6',
+        background_color: '#FAF5F7',
         display: 'standalone',
         orientation: 'any',
         start_url: '/',
@@ -24,8 +24,10 @@ export default defineConfig({
         ]
       },
       workbox: {
-        globPatterns: ['**/*.{js,css,html,ico,png,svg,json,webmanifest}'],
-        maximumFileSizeToCacheInBytes: 5 * 1024 * 1024
+        globPatterns: ['**/*.{js,css,html,ico,svg,json,webmanifest}'],
+        maximumFileSizeToCacheInBytes: 5 * 1024 * 1024,
+        // 不缓存 PNG 图标文件，确保图标更新能立即生效
+        globIgnores: ['**/icon-*.png', '**/favicon.png', '**/apple-touch-icon.png'],
       }
     })
   ]
